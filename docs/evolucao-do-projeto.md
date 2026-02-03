@@ -27,10 +27,10 @@ Acompanhar a transformação progressiva do código, desde uma implementação e
 **Bloco 3 - Ferramentas e Organização (Aulas 8-10)**
 - IntelliJ IDE e Debug
 - Organizando em Arquivos e Herança
-- Pacotes, Modificadores de Acesso, Getters e Setters ← **VOCÊ ESTÁ AQUI**
+- Pacotes, Modificadores de Acesso, Getters e Setters
 
-**Bloco 4 - POO Avançada (Aulas 11-13)**
-- Protected
+**Bloco 4 - POO Avançada (Aulas 11-13)** ← **VOCÊ ESTÁ AQUI**
+- Protected ✅
 - String
 - Imutabilidade, StringBuilder e Final
 
@@ -92,25 +92,101 @@ ItemCardapio (classe base)
 
 ### Aula 11 - Protected
 
-**Status:** ⏳ Aguardando implementação
+**Status:** ✅ Concluída  
+**Data:** Fevereiro 2026
 
-#### 📝 O que será aprendido
-- Modificador de acesso `protected`
-- Diferença entre `protected`, `private`, `public` e `default`
-- Visibilidade em herança
-
-_Template para preencher após a aula:_
-```
 #### ✨ Novidades Implementadas
-- [Descrever mudanças no código]
+
+**Refatoração de Pacotes:**
+- Criado novo pacote `mx.florinda.modelo.isento`
+- Movida classe `ItemCardapioIsento` para o novo pacote
+- Reorganização da estrutura de pacotes para melhor separação de responsabilidades
+
+**Modificador de Acesso:**
+- Alterado construtor de `ItemCardapio` de `default` (package-private) para `protected`
+- Permitiu acesso do construtor por subclasses em pacotes diferentes
+- Demonstração prática da diferença entre modificadores
 
 #### 🎓 Conceitos Aplicados
-- [ ] Conceito 1
-- [ ] Conceito 2
+- ✅ Modificador de acesso `protected`
+- ✅ Visibilidade entre pacotes e herança
+- ✅ Refatoração de código
+- ✅ Organização em sub-pacotes
 
-#### 💻 Exemplo de Código
-[Adicionar exemplo relevante]
+#### 🔍 Processo de Aprendizado
+
+**Problema encontrado:**
+```java
+// ItemCardapioIsento movido para mx.florinda.modelo.isento
+// Erro no construtor super() porque ItemCardapio tinha construtor default
+public class ItemCardapioIsento extends ItemCardapio {
+    ItemCardapioIsento(...) {
+        super(...); // ❌ ERRO: construtor não visível
+    }
+}
 ```
+
+**Solução tentada 1:**
+```java
+// Em ItemCardapio
+public ItemCardapio(...) { // public funciona ✅
+    // ...
+}
+```
+
+**Solução final (melhor prática):**
+```java
+// Em ItemCardapio
+protected ItemCardapio(...) { // protected é mais apropriado ✅
+    // ...
+}
+```
+
+#### 💡 Aprendizado Chave
+
+**Protected permite:**
+- ✅ Acesso por subclasses (mesmo em outros pacotes)
+- ✅ Acesso por classes no mesmo pacote
+- ❌ NÃO permite acesso público externo
+
+**Tabela de Visibilidade:**
+
+| Modificador | Mesma Classe | Mesmo Pacote | Subclasse (outro pacote) | Qualquer Classe |
+|-------------|--------------|--------------|--------------------------|-----------------|
+| `private`   | ✅           | ❌           | ❌                       | ❌              |
+| `default`   | ✅           | ✅           | ❌                       | ❌              |
+| `protected` | ✅           | ✅           | ✅                       | ❌              |
+| `public`    | ✅           | ✅           | ✅                       | ✅              |
+
+#### 📝 Nova Estrutura de Pacotes
+
+```
+mx.florinda/
+├── cli/
+│   └── Main.java
+└── modelo/
+    ├── Cardapio.java
+    ├── CategoriaCardapio.java
+    ├── ItemCardapio.java (construtor protected)
+    ├── ItemCardapioBebida.java
+    ├── ItemCardapioSemGluten.java
+    ├── Restaurante.java
+    └── isento/
+        └── ItemCardapioIsento.java (usa construtor protected)
+```
+
+#### 🎯 Por que usar Protected?
+
+**Vantagens:**
+- ✅ Mais seguro que `public` (restringe acesso)
+- ✅ Mais flexível que `default` (permite herança entre pacotes)
+- ✅ Encapsula lógica de construção
+- ✅ Segue o princípio do menor privilégio
+
+**Quando usar:**
+- Construtores de classes base abstratas
+- Métodos que devem ser sobrescritos por subclasses
+- Atributos que subclasses precisam acessar diretamente
 
 ---
 

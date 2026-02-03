@@ -170,7 +170,7 @@ Este item não contém glúten.
 8. ✅ IntelliJ IDE e Debug
 9. ✅ Organizando em Arquivos e Herança
 10. ✅ **Pacotes, Modificadores de Acesso, Getters e Setters** ← Você está aqui!
-11. ⏳ Protected
+11. ✅ Protected
 12. ⏳ String
 13. ⏳ Imutabilidade, StringBuilder e Final
 14. ⏳ Praticando com Arquivo CSV

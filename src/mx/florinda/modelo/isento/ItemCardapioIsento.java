@@ -1,9 +1,13 @@
-package mx.florinda.modelo;
+package mx.florinda.modelo.isento;
+
+import mx.florinda.modelo.CategoriaCardapio;
+import mx.florinda.modelo.ItemCardapio;
 
 public class ItemCardapioIsento extends ItemCardapio {
 
     //construtor
-    ItemCardapioIsento(long id, String nome, String descricao, double preco, CategoriaCardapio categoria) {
+
+    public ItemCardapioIsento(long id, String nome, String descricao, double preco, CategoriaCardapio categoria) {
         super(id, nome, descricao, preco, categoria);
     }
 

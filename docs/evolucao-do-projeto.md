@@ -31,7 +31,7 @@ Acompanhar a transformação progressiva do código, desde uma implementação e
 
 **Bloco 4 - POO Avançada (Aulas 11-13)** ← **VOCÊ ESTÁ AQUI**
 - Protected ✅
-- String
+- String ✅
 - Imutabilidade, StringBuilder e Final
 
 **Bloco 5 - Arquivos e Dados (Aulas 14-15)**
@@ -97,59 +97,32 @@ ItemCardapio (classe base)
 
 #### ✨ Novidades Implementadas
 
-**Refatoração de Pacotes:**
-- Criado novo pacote `mx.florinda.modelo.isento`
-- Movida classe `ItemCardapioIsento` para o novo pacote
-- Reorganização da estrutura de pacotes para melhor separação de responsabilidades
-
-**Modificador de Acesso:**
+**Modificador de Acesso Protected:**
 - Alterado construtor de `ItemCardapio` de `default` (package-private) para `protected`
-- Permitiu acesso do construtor por subclasses em pacotes diferentes
-- Demonstração prática da diferença entre modificadores
+- Permite acesso do construtor por subclasses em pacotes diferentes
+- Aprendi que `protected` é acessível por:
+    - Classes no mesmo pacote
+    - Subclasses (mesmo em pacotes diferentes)
+
+**Geração Automática de Código (IntelliJ):**
+- Aprendi a gerar getters e setters automaticamente com a IDE
+- Atalho: `Alt + Insert` (ou `Code → Generate`)
+- Entendi o motivo dos getters/setters: encapsulamento e controle de acesso
 
 #### 🎓 Conceitos Aplicados
 - ✅ Modificador de acesso `protected`
 - ✅ Visibilidade entre pacotes e herança
-- ✅ Refatoração de código
-- ✅ Organização em sub-pacotes
-
-#### 🔍 Processo de Aprendizado
-
-**Problema encontrado:**
-```java
-// ItemCardapioIsento movido para mx.florinda.modelo.isento
-// Erro no construtor super() porque ItemCardapio tinha construtor default
-public class ItemCardapioIsento extends ItemCardapio {
-    ItemCardapioIsento(...) {
-        super(...); // ❌ ERRO: construtor não visível
-    }
-}
-```
-
-**Solução tentada 1:**
-```java
-// Em ItemCardapio
-public ItemCardapio(...) { // public funciona ✅
-    // ...
-}
-```
-
-**Solução final (melhor prática):**
-```java
-// Em ItemCardapio
-protected ItemCardapio(...) { // protected é mais apropriado ✅
-    // ...
-}
-```
+- ✅ Geração automática de getters/setters
+- ✅ Encapsulamento
 
 #### 💡 Aprendizado Chave
 
-**Protected permite:**
-- ✅ Acesso por subclasses (mesmo em outros pacotes)
-- ✅ Acesso por classes no mesmo pacote
-- ❌ NÃO permite acesso público externo
+**Protected permite acesso por:**
+- ✅ Classes no **mesmo pacote**
+- ✅ **Subclasses** (mesmo em outros pacotes)
+- ❌ NÃO permite acesso público geral
 
-**Tabela de Visibilidade:**
+**Diferença dos Modificadores:**
 
 | Modificador | Mesma Classe | Mesmo Pacote | Subclasse (outro pacote) | Qualquer Classe |
 |-------------|--------------|--------------|--------------------------|-----------------|
@@ -158,46 +131,173 @@ protected ItemCardapio(...) { // protected é mais apropriado ✅
 | `protected` | ✅           | ✅           | ✅                       | ❌              |
 | `public`    | ✅           | ✅           | ✅                       | ✅              |
 
-#### 📝 Nova Estrutura de Pacotes
+#### 🛠️ Funcionalidades da IDE Aprendidas
+- **Geração de Getters/Setters:** `Alt + Insert` → Generate → Getters and Setters
+- Seleção automática de atributos
+- Geração em lote (todos de uma vez)
 
-```
-mx.florinda/
-├── cli/
-│   └── Main.java
-└── modelo/
-    ├── Cardapio.java
-    ├── CategoriaCardapio.java
-    ├── ItemCardapio.java (construtor protected)
-    ├── ItemCardapioBebida.java
-    ├── ItemCardapioSemGluten.java
-    ├── Restaurante.java
-    └── isento/
-        └── ItemCardapioIsento.java (usa construtor protected)
-```
-
-#### 🎯 Por que usar Protected?
-
-**Vantagens:**
-- ✅ Mais seguro que `public` (restringe acesso)
-- ✅ Mais flexível que `default` (permite herança entre pacotes)
-- ✅ Encapsula lógica de construção
-- ✅ Segue o princípio do menor privilégio
-
-**Quando usar:**
-- Construtores de classes base abstratas
-- Métodos que devem ser sobrescritos por subclasses
-- Atributos que subclasses precisam acessar diretamente
+#### 🎯 Por que usar Getters e Setters?
+- ✅ **Encapsulamento:** Protege atributos privados
+- ✅ **Validação:** Pode adicionar lógica antes de setar valores
+- ✅ **Flexibilidade:** Permite mudar implementação interna sem quebrar código externo
+- ✅ **Padrão JavaBeans:** Convenção da linguagem
 
 ---
 
 ### Aula 12 - String
 
-**Status:** ⏳ Aguardando implementação
+**Status:** ✅ Concluída  
+**Data:** Fevereiro 2026
 
-#### 📝 O que será aprendido
-- Manipulação de Strings em Java
-- Métodos úteis da classe String
-- Pool de Strings
+#### ✨ Novidades Implementadas
+
+**Classe de Teste no Projeto Principal:**
+- Criada classe `TesteString` no pacote `mx.florinda.cli`
+- Pratica métodos da classe String usando itens do cardápio
+- Demonstração de manipulação de strings no contexto do projeto
+
+**Exercícios Práticos (Pacote Separado):**
+- Criado pacote `guisleri.exercicios.aula12.string`
+- **Exercício 1 - Processador de Nomes:** Extrai primeiro e último nome usando `split()`
+- **Exercício 2 - Validador de URL:** Valida URLs usando `startsWith()` e `endsWith()`
+
+#### 🎓 Conceitos Aplicados
+- ✅ Manipulação de Strings em Java
+- ✅ Métodos principais da classe String
+- ✅ Comparação de Strings (== vs equals())
+- ✅ Imutabilidade de Strings
+- ✅ Case-sensitivity
+
+#### 📚 Métodos String Aprendidos
+
+**Informações sobre a String:**
+- `length()` - Retorna tamanho da string
+- `charAt(index)` - Retorna caractere em uma posição
+- `isEmpty()` - Verifica se está vazia
+
+**Verificações:**
+- `contains(String)` - Verifica se contém uma substring
+- `startsWith(String)` - Verifica se começa com determinado texto
+- `endsWith(String)` - Verifica se termina com determinado texto
+
+**Comparações:**
+- `==` - Compara referências (NÃO usar para conteúdo!)
+- `equals(String)` - Compara conteúdo (case-sensitive)
+- `equalsIgnoreCase(String)` - Compara conteúdo (ignora maiúsculas/minúsculas)
+
+**Transformações:**
+- `toUpperCase()` - Converte para maiúsculas
+- `toLowerCase()` - Converte para minúsculas
+- `replace(old, new)` - Substitui caracteres/texto
+- `trim()` - Remove espaços nas extremidades
+- `concat(String)` - Concatena strings
+
+**Extração:**
+- `substring(start)` - Extrai do índice até o final
+- `substring(start, end)` - Extrai entre índices
+- `split(delimiter)` - Divide string em array
+
+#### 💻 Código de Exemplo - TesteString.java
+
+```java
+String nomeItem1 = "Refresco do Chaves";
+
+// Tamanho e acesso a caracteres
+IO.println(nomeItem1.length());        // 18
+IO.println(nomeItem1.charAt(0));       // 'R'
+
+// Verificações
+IO.println(nomeItem1.contains("Chaves"));      // true
+IO.println(nomeItem1.startsWith("Refresco"));  // true
+IO.println(nomeItem1.endsWith("Chaves"));      // true
+
+// Divisão de string
+String[] pedacos = nomeItem1.split(" ");
+// ["Refresco", "do", "Chaves"]
+
+// Comparação (IMPORTANTE!)
+String digitado = IO.readln("Digite: ");
+IO.println(nomeItem1 == digitado);             // ❌ Não use!
+IO.println(nomeItem1.equals(digitado));        // ✅ Use este!
+IO.println(nomeItem1.equalsIgnoreCase(digitado)); // ✅ Ignora case
+
+// Transformações
+IO.println(nomeItem1.toUpperCase());   // "REFRESCO DO CHAVES"
+IO.println(nomeItem1.toLowerCase());   // "refresco do chaves"
+IO.println(nomeItem1.replace(" ", "-")); // "Refresco-do-Chaves"
+IO.println(nomeItem1.substring(0, 8)); // "Refresco"
+```
+
+#### 🎯 Exercícios Realizados
+
+**Exercício 1 - Processador de Nomes:**
+```java
+String nomeCompleto = IO.readln("Informe seu nome completo: ");
+String[] nomeSobrenome = nomeCompleto.split(" ");
+IO.println("Olá, " + nomeSobrenome[0] + " " + nomeSobrenome[nomeSobrenome.length - 1]);
+// Entrada: "João da Silva"
+// Saída: "Olá, João Silva"
+```
+
+**Exercício 2 - Validador de URL:**
+```java
+String url = IO.readln("Digite uma URL: ");
+boolean inicioValido = url.startsWith("http://") || 
+                       url.startsWith("https://") || 
+                       url.startsWith("HTTP://");
+boolean fimValido = url.endsWith(".com") || url.endsWith(".com.br");
+
+if (inicioValido && fimValido) {
+    IO.println("URL válida");
+} else {
+    IO.println("URL inválida");
+}
+```
+
+#### 💡 Lições Importantes
+
+**1. Strings são Imutáveis:**
+```java
+String nome = "Refresco";
+String nomeMaiusculo = nome.toUpperCase();
+IO.println(nome);           // "Refresco" (não mudou!)
+IO.println(nomeMaiusculo);  // "REFRESCO" (nova string)
+```
+
+**2. Use `equals()` para Comparar:**
+```java
+// ❌ ERRADO
+if (nome == "Refresco") { ... }
+
+// ✅ CORRETO
+if (nome.equals("Refresco")) { ... }
+```
+
+**3. Cuidado com `split()`:**
+- Retorna um array
+- Sempre verifique se array tem elementos suficientes
+- Exemplo: "João" → só 1 elemento (sem sobrenome)
+
+#### 📝 Estrutura de Pacotes Atualizada
+
+```
+mx.florinda/
+├── cli/
+│   ├── Main.java
+│   └── TesteString.java  ← NOVO
+└── modelo/
+    └── ...
+
+guisleri.exercicios.aula12.string/  ← NOVO (exercícios separados)
+└── Main.java
+```
+
+#### 🔗 Aplicações Práticas no Projeto
+
+- Validação de nomes de itens
+- Formatação de textos para exibição
+- Processamento de entrada do usuário
+- Geração de URLs/slugs (ex: "Refresco do Chaves" → "refresco-do-chaves")
 
 ---
 
@@ -315,19 +415,20 @@ ItemCardapio item = restaurante.getCardapio().getItensPorId(1L);
 
 | Métrica | Valor Atual |
 |---------|-------------|
-| Classes criadas | 8 |
-| Linhas de código | ~400 |
-| Conceitos de POO aplicados | 5 |
-| Exercícios resolvidos | 2 (aula 10) |
-| Aulas versionadas | 1 de 19 |
+| Classes criadas | 10+ |
+| Linhas de código | ~500+ |
+| Conceitos de POO aplicados | 6 |
+| Exercícios resolvidos | 4 (aulas 10-12) |
+| Aulas versionadas | 3 de 19 |
+| Aulas concluídas | 12 de 19 |
 
 ---
 
 ## 🎯 Próximos Passos
 
 **Bloco 4 - POO Avançada:**
-- [ ] Aula 11 - Protected
-- [ ] Aula 12 - String
+- [x] Aula 11 - Protected ✅
+- [x] Aula 12 - String ✅
 - [ ] Aula 13 - Imutabilidade, StringBuilder e Final
 
 **Bloco 5 - Arquivos e Dados:**
@@ -348,6 +449,16 @@ ItemCardapio item = restaurante.getCardapio().getItensPorId(1L);
 1. **Composição vs Agregação**: Entendimento claro da diferença entre relacionamentos "tem-um"
 2. **Encapsulamento**: Importância de proteger atributos e expor apenas interfaces necessárias
 3. **Modelagem de domínio**: Como traduzir conceitos do mundo real em código
+
+### Aula 11
+1. **Protected**: Modificador perfeito para herança entre pacotes
+2. **Geração de Código**: Usar recursos da IDE para produtividade (Alt+Insert)
+3. **Getters/Setters**: Não são apenas "formalidade", garantem encapsulamento
+
+### Aula 12
+1. **Imutabilidade de Strings**: Métodos sempre retornam novas strings
+2. **equals() vs ==**: Sempre usar equals() para comparar conteúdo de strings
+3. **Métodos String**: Java oferece métodos poderosos para manipulação de texto
 
 ---
 
@@ -375,4 +486,4 @@ ItemCardapio item = restaurante.getCardapio().getItensPorId(1L);
 ---
 
 _Documento atualizado em: Fevereiro 2026_
-_Última aula registrada: Aula 10_
+_Última aula registrada: Aula 12_

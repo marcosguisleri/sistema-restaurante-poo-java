@@ -17,10 +17,11 @@ Este é um sistema de cardápio digital inspirado no universo do **Chaves**, des
 - ✅ Classes e Objetos
 - ✅ Encapsulamento (Getters e Setters)
 - ✅ Herança e Polimorfismo
-- ✅ Modificadores de Acesso
+- ✅ Modificadores de Acesso (private, protected, public)
 - ✅ Enums
 - ✅ Arrays e Coleções
 - ✅ Composição de Objetos
+- ✅ Manipulação de Strings
 
 ---
 
@@ -41,17 +42,21 @@ Este é um sistema de cardápio digital inspirado no universo do **Chaves**, des
 ```
 sistema-restaurante-poo-java/
 ├── src/
-│   └── mx/florinda/
-│       ├── cli/
-│       │   └── Main.java                    # Ponto de entrada da aplicação
-│       └── modelo/
-│           ├── Cardapio.java                # Gerencia a coleção de itens
-│           ├── CategoriaCardapio.java       # Enum com categorias
-│           ├── ItemCardapio.java            # Classe base dos itens
-│           ├── ItemCardapioBebida.java      # Especialização para bebidas
-│           ├── ItemCardapioIsento.java      # Itens isentos de imposto
-│           ├── ItemCardapioSemGluten.java   # Itens sem glúten
-│           └── Restaurante.java             # Representa o restaurante
+│   ├── mx/florinda/
+│   │   ├── cli/
+│   │   │   ├── Main.java                    # Ponto de entrada da aplicação
+│   │   │   └── TesteString.java             # Pratica métodos String
+│   │   └── modelo/
+│   │       ├── Cardapio.java                # Gerencia a coleção de itens
+│   │       ├── CategoriaCardapio.java       # Enum com categorias
+│   │       ├── ItemCardapio.java            # Classe base dos itens
+│   │       ├── ItemCardapioBebida.java      # Especialização para bebidas
+│   │       ├── ItemCardapioIsento.java      # Itens isentos de imposto
+│   │       ├── ItemCardapioSemGluten.java   # Itens sem glúten
+│   │       └── Restaurante.java             # Representa o restaurante
+│   └── guisleri/exercicios/aula12/
+│       └── string/
+│           └── Main.java                    # Exercícios de String
 ├── docs/
 │   ├── evolucao-do-projeto.md              # Histórico de mudanças
 │   └── conceitos-aprendidos.md             # Conceitos de POO aplicados
@@ -156,7 +161,7 @@ Este item não contém glúten.
 **Instituição:** UNIPDS (Pós-Graduação)  
 **Módulo:** 01 - Introdução ao Java  
 **Total de Aulas:** 19 videoaulas  
-**Aula Atual:** 10 - Pacotes, Modificadores de Acesso, Getters e Setters
+**Aula Atual:** 12 - String
 
 ### 📚 Conteúdo do Módulo 1
 
@@ -169,9 +174,9 @@ Este item não contém glúten.
 7. ✅ Arrays de Objetos, Composição e Enums
 8. ✅ IntelliJ IDE e Debug
 9. ✅ Organizando em Arquivos e Herança
-10. ✅ **Pacotes, Modificadores de Acesso, Getters e Setters** ← Você está aqui!
-11. ✅ Protected
-12. ⏳ String
+10. ✅ **Pacotes, Modificadores de Acesso, Getters e Setters**
+11. ✅ **Protected**
+12. ✅ **String** ← Você está aqui!
 13. ⏳ Imutabilidade, StringBuilder e Final
 14. ⏳ Praticando com Arquivo CSV
 15. ⏳ Praticando com Arquivo JSON
@@ -180,7 +185,7 @@ Este item não contém glúten.
 18. ⏳ Object, Classes Wrapper e Javadoc
 19. ⏳ JARs e Exceptions
 
-> **Nota:** Este repositório documenta meu aprendizado a partir da **Aula 10**, onde começou o versionamento do código. O projeto continua evoluindo nas próximas 9 aulas do módulo.
+> **Nota:** Este repositório documenta meu aprendizado a partir da **Aula 10**, onde começou o versionamento do código. O projeto continua evoluindo nas próximas 7 aulas do módulo.
 
 ---
 

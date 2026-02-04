@@ -14,6 +14,7 @@ Este documento consolida os **conceitos de Programação Orientada a Objetos (PO
 6. [Modificadores de Acesso](#6-modificadores-de-acesso)
 7. [Enums](#7-enums)
 8. [Construtores](#8-construtores)
+9. [Manipulação de Strings](#9-manipulação-de-strings)
 
 ---
 
@@ -367,17 +368,19 @@ public class ItemCardapioBebida extends ItemCardapio {
 
 ---
 
-## 📊 Resumo de Conceitos por Classe
+## 📊 Resumo de Conceitos por Classe/Tópico
 
-| Classe | Encapsulamento | Herança | Polimorfismo | Composição | Enum |
-|--------|----------------|---------|--------------|------------|------|
-| `Restaurante` | ✅ | ❌ | ❌ | ✅ (tem Cardapio) | ❌ |
-| `Cardapio` | ✅ | ❌ | ❌ | ✅ (tem ItemCardapio[]) | ❌ |
-| `ItemCardapio` | ✅ | ✅ (pai) | ✅ | ❌ | ✅ (usa CategoriaCardapio) |
-| `ItemCardapioBebida` | ✅ | ✅ (filho) | ✅ (override) | ❌ | ❌ |
-| `ItemCardapioIsento` | ✅ | ✅ (filho) | ✅ (override) | ❌ | ❌ |
-| `ItemCardapioSemGluten` | ✅ | ✅ (filho) | ✅ (override) | ❌ | ❌ |
-| `CategoriaCardapio` | ❌ | ❌ | ❌ | ❌ | ✅ (é enum) |
+| Classe/Tópico | Encapsulamento | Herança | Polimorfismo | Composição | Enum | String |
+|---------------|----------------|---------|--------------|------------|------|--------|
+| `Restaurante` | ✅ | ❌ | ❌ | ✅ (tem Cardapio) | ❌ | ❌ |
+| `Cardapio` | ✅ | ❌ | ❌ | ✅ (tem ItemCardapio[]) | ❌ | ❌ |
+| `ItemCardapio` | ✅ | ✅ (pai) | ✅ | ❌ | ✅ (usa CategoriaCardapio) | ❌ |
+| `ItemCardapioBebida` | ✅ | ✅ (filho) | ✅ (override) | ❌ | ❌ | ❌ |
+| `ItemCardapioIsento` | ✅ | ✅ (filho) | ✅ (override) | ❌ | ❌ | ❌ |
+| `ItemCardapioSemGluten` | ✅ | ✅ (filho) | ✅ (override) | ❌ | ❌ | ❌ |
+| `CategoriaCardapio` | ❌ | ❌ | ❌ | ❌ | ✅ (é enum) | ❌ |
+| `TesteString` | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ (manipulação) |
+| Exercícios Aula 12 | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ (validação) |
 
 ---
 
@@ -399,6 +402,181 @@ public class ItemCardapioBebida extends ItemCardapio {
 
 ---
 
+## 9. Manipulação de Strings
+
+### 📖 Teoria
+Strings em Java são objetos **imutáveis** da classe `String` que representam sequências de caracteres. Isso significa que qualquer operação que "modifica" uma string na verdade cria uma nova string.
+
+### 🎯 Imutabilidade
+
+```java
+String nome = "Refresco";
+String nomeMaiusculo = nome.toUpperCase();
+
+IO.println(nome);           // "Refresco" (original não mudou!)
+IO.println(nomeMaiusculo);  // "REFRESCO" (nova string criada)
+```
+
+**Por que imutáveis?**
+- ✅ Segurança em multithreading
+- ✅ Pool de strings (economia de memória)
+- ✅ Strings podem ser usadas como chaves em HashMap
+- ✅ Segurança (não podem ser alteradas após criação)
+
+### 💻 Aplicação no Projeto
+
+**Classe TesteString.java:**
+```java
+String nomeItem1 = "Refresco do Chaves";
+
+// Informações
+nomeItem1.length();        // 18
+nomeItem1.charAt(0);       // 'R'
+nomeItem1.isEmpty();       // false
+
+// Verificações
+nomeItem1.contains("Chaves");      // true
+nomeItem1.startsWith("Refresco");  // true
+nomeItem1.endsWith("Chaves");      // true
+
+// Divisão
+String[] pedacos = nomeItem1.split(" ");
+// ["Refresco", "do", "Chaves"]
+
+// Transformações
+nomeItem1.toUpperCase();              // "REFRESCO DO CHAVES"
+nomeItem1.toLowerCase();              // "refresco do chaves"
+nomeItem1.replace(" ", "-");          // "Refresco-do-Chaves"
+nomeItem1.substring(0, 8);            // "Refresco"
+nomeItem1.substring(12);              // "Chaves"
+nomeItem1.trim();                     // Remove espaços nas extremidades
+nomeItem1.concat(" gelado");          // "Refresco do Chaves gelado"
+```
+
+### ⚠️ Comparação de Strings - MUITO IMPORTANTE!
+
+```java
+String digitado = IO.readln("Digite: ");
+
+// ❌ ERRADO - Compara referências, não conteúdo
+if (nomeItem1 == digitado) { ... }
+
+// ✅ CORRETO - Compara conteúdo (case-sensitive)
+if (nomeItem1.equals(digitado)) { ... }
+
+// ✅ CORRETO - Compara conteúdo (ignora maiúsculas/minúsculas)
+if (nomeItem1.equalsIgnoreCase(digitado)) { ... }
+```
+
+**Por que não usar `==`?**
+- `==` compara **referências** (endereços de memória)
+- `equals()` compara **conteúdo** (caracteres)
+
+### 🎯 Métodos Principais Categorizados
+
+**Informações:**
+- `length()` - Tamanho da string
+- `charAt(int index)` - Caractere em determinada posição
+- `isEmpty()` - Verifica se está vazia
+
+**Verificações:**
+- `contains(CharSequence s)` - Contém substring?
+- `startsWith(String prefix)` - Começa com?
+- `endsWith(String suffix)` - Termina com?
+
+**Comparações:**
+- `equals(Object obj)` - Conteúdo igual? (case-sensitive)
+- `equalsIgnoreCase(String another)` - Conteúdo igual? (case-insensitive)
+- `compareTo(String another)` - Comparação lexicográfica
+
+**Transformações:**
+- `toUpperCase()` - Converte para maiúsculas
+- `toLowerCase()` - Converte para minúsculas
+- `trim()` - Remove espaços nas extremidades
+- `replace(char old, char new)` - Substitui caracteres
+- `concat(String str)` - Concatena strings
+
+**Extração:**
+- `substring(int begin)` - Do índice até o final
+- `substring(int begin, int end)` - Entre índices
+- `split(String regex)` - Divide em array
+- `toCharArray()` - Converte para array de chars
+
+### 💡 Casos de Uso no Projeto
+
+**1. Processamento de Nomes (Exercício 1):**
+```java
+String nomeCompleto = "João da Silva";
+String[] partes = nomeCompleto.split(" ");
+String saudacao = "Olá, " + partes[0] + " " + partes[partes.length - 1];
+// "Olá, João Silva"
+```
+
+**2. Validação de URL (Exercício 2):**
+```java
+String url = "https://exemplo.com.br";
+boolean inicioValido = url.startsWith("http://") || 
+                       url.startsWith("https://") || 
+                       url.startsWith("HTTP://");
+boolean fimValido = url.endsWith(".com") || url.endsWith(".com.br");
+// URL válida se ambos forem true
+```
+
+**3. Geração de Slugs:**
+```java
+String nomeItem = "Refresco do Chaves";
+String slug = nomeItem.toLowerCase().replace(" ", "-");
+// "refresco-do-chaves"
+```
+
+**4. Formatação de Exibição:**
+```java
+String nome = "   Churros   ";
+String limpo = nome.trim();  // "Churros"
+```
+
+### 🔍 Armadilhas Comuns
+
+**1. NullPointerException:**
+```java
+String nome = null;
+nome.length();  // ❌ ERRO! NullPointerException
+
+// ✅ CORRETO: Sempre verifique null primeiro
+if (nome != null && nome.length() > 0) { ... }
+```
+
+**2. IndexOutOfBoundsException:**
+```java
+String texto = "ABC";
+char c = texto.charAt(5);  // ❌ ERRO! Índice não existe
+
+// ✅ CORRETO: Verifique o tamanho primeiro
+if (index < texto.length()) {
+    char c = texto.charAt(index);
+}
+```
+
+**3. split() com array vazio:**
+```java
+String nome = "João";
+String[] partes = nome.split(" ");
+String sobrenome = partes[1];  // ❌ ERRO! Pode não existir
+
+// ✅ CORRETO: Verifique o tamanho do array
+if (partes.length > 1) {
+    String sobrenome = partes[partes.length - 1];
+}
+```
+
+### ✅ Onde foi usado
+- `TesteString.java` - Demonstração de todos os métodos
+- Exercício 1 - Processador de Nomes com `split()`
+- Exercício 2 - Validador de URL com `startsWith()` e `endsWith()`
+- Possíveis aplicações futuras: validação de entrada, formatação de dados
+
+---
+
 ## 💡 Boas Práticas Aplicadas
 
 1. ✅ **Nomes significativos**: Classes e métodos com nomes descritivos
@@ -407,6 +585,9 @@ public class ItemCardapioBebida extends ItemCardapio {
 4. ✅ **Anotação @Override**: Documentar sobrescrita de métodos
 5. ✅ **Construtores package-private**: Controlar instanciação
 6. ✅ **Organização em pacotes**: Separar responsabilidades
+7. ✅ **Comparação de Strings**: Sempre usar `equals()`, nunca `==`
+8. ✅ **Validação de entrada**: Verificar null e índices antes de acessar
+9. ✅ **Imutabilidade**: Entender que métodos String retornam novas strings
 
 ---
 
@@ -419,4 +600,4 @@ public class ItemCardapioBebida extends ItemCardapio {
 ---
 
 _Documento atualizado em: Fevereiro 2026_
-_Última revisão: Aula 10_
+_Última revisão: Aula 12_

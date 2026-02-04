@@ -22,6 +22,9 @@ Este é um sistema de cardápio digital inspirado no universo do **Chaves**, des
 - ✅ Arrays e Coleções
 - ✅ Composição de Objetos
 - ✅ Manipulação de Strings
+- ✅ StringBuilder e Performance
+- ✅ Modificador Final
+- ✅ Classes Imutáveis
 
 ---
 
@@ -45,7 +48,7 @@ sistema-restaurante-poo-java/
 │   ├── mx/florinda/
 │   │   ├── cli/
 │   │   │   ├── Main.java                    # Ponto de entrada da aplicação
-│   │   │   └── TesteString.java             # Pratica métodos String
+│   │   │   └── TesteString.java             # Pratica métodos String + StringBuilder
 │   │   └── modelo/
 │   │       ├── Cardapio.java                # Gerencia a coleção de itens
 │   │       ├── CategoriaCardapio.java       # Enum com categorias
@@ -54,9 +57,16 @@ sistema-restaurante-poo-java/
 │   │       ├── ItemCardapioIsento.java      # Itens isentos de imposto
 │   │       ├── ItemCardapioSemGluten.java   # Itens sem glúten
 │   │       └── Restaurante.java             # Representa o restaurante
-│   └── guisleri/exercicios/aula12/
-│       └── string/
-│           └── Main.java                    # Exercícios de String
+│   └── guisleri/exercicios/
+│       ├── aula12/string/
+│       │   └── Main.java                    # Exercícios de String
+│       └── aula13/stringbuilder/
+│           ├── exe01/
+│           │   ├── Main.java                # Construtor de Relatórios
+│           │   └── Produto.java             # Classe Produto
+│           └── exe02/
+│               ├── Main.java                # Teste de Coordenada
+│               └── Coordenada.java          # Classe imutável
 ├── docs/
 │   ├── evolucao-do-projeto.md              # Histórico de mudanças
 │   └── conceitos-aprendidos.md             # Conceitos de POO aplicados
@@ -161,7 +171,7 @@ Este item não contém glúten.
 **Instituição:** UNIPDS (Pós-Graduação)  
 **Módulo:** 01 - Introdução ao Java  
 **Total de Aulas:** 19 videoaulas  
-**Aula Atual:** 12 - String
+**Aula Atual:** 13 - Imutabilidade, StringBuilder e Final
 
 ### 📚 Conteúdo do Módulo 1
 
@@ -176,8 +186,8 @@ Este item não contém glúten.
 9. ✅ Organizando em Arquivos e Herança
 10. ✅ **Pacotes, Modificadores de Acesso, Getters e Setters**
 11. ✅ **Protected**
-12. ✅ **String** ← Você está aqui!
-13. ⏳ Imutabilidade, StringBuilder e Final
+12. ✅ **String**
+13. ✅ **Imutabilidade, StringBuilder e Final** ← Você está aqui!
 14. ⏳ Praticando com Arquivo CSV
 15. ⏳ Praticando com Arquivo JSON
 16. ⏳ Refatoração e Interfaces
@@ -185,7 +195,7 @@ Este item não contém glúten.
 18. ⏳ Object, Classes Wrapper e Javadoc
 19. ⏳ JARs e Exceptions
 
-> **Nota:** Este repositório documenta meu aprendizado a partir da **Aula 10**, onde começou o versionamento do código. O projeto continua evoluindo nas próximas 7 aulas do módulo.
+> **Nota:** Este repositório documenta meu aprendizado a partir da **Aula 10**, onde começou o versionamento do código. O projeto continua evoluindo nas próximas 6 aulas do módulo.
 
 ---
 

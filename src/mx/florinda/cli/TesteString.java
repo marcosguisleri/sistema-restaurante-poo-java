@@ -40,5 +40,24 @@ public class TesteString {
         IO.println(nomeItem1);
         IO.println(nomeItem1Maiusculas);
 
+
+        long inicio = System.currentTimeMillis();
+        String teste = "";
+        for (int i = 0; i < 1_000; i++) {
+            teste += i + ", ";
+        }
+        long fim = System.currentTimeMillis();
+        IO.println("Tempo String: " + (fim - inicio));
+        IO.println(teste);
+
+        long inicioSB = System.currentTimeMillis();
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < 1_000; i++) {
+            builder.append(i).append(", ");
+        }
+        long fimSB = System.currentTimeMillis();
+        IO.println("Tempo StringBuilder: " + (fimSB - inicioSB));
+        IO.println(builder);
+
     }
 }

@@ -29,12 +29,12 @@ Acompanhar a transformação progressiva do código, desde uma implementação e
 - Organizando em Arquivos e Herança
 - Pacotes, Modificadores de Acesso, Getters e Setters
 
-**Bloco 4 - POO Avançada (Aulas 11-13)** ← **VOCÊ ESTÁ AQUI**
+**Bloco 4 - POO Avançada (Aulas 11-13)**
 - Protected ✅
 - String ✅
-- Imutabilidade, StringBuilder e Final
+- Imutabilidade, StringBuilder e Final ✅
 
-**Bloco 5 - Arquivos e Dados (Aulas 14-15)**
+**Bloco 5 - Arquivos e Dados (Aulas 14-15)** ← **VOCÊ ESTÁ AQUI**
 - Praticando com Arquivo CSV
 - Praticando com Arquivo JSON
 
@@ -312,6 +312,241 @@ guisleri.exercicios.aula12.string/  ← NOVO (exercícios separados)
 
 ---
 
+### Aula 13 - Imutabilidade, StringBuilder e Final
+
+**Status:** ✅ Concluída  
+**Data:** Fevereiro 2026
+
+#### ✨ Novidades Implementadas
+
+**No Projeto Principal - TesteString.java:**
+- Adicionado teste de performance comparando String vs StringBuilder
+- Demonstração prática da ineficiência de concatenação em loops
+- Medição de tempo de execução com `System.currentTimeMillis()`
+
+**Exercícios Práticos (Pacotes Separados):**
+- Criado pacote `guisleri.exercicios.aula13.stringbuilder`
+- **Exercício 1 - Construtor de Relatórios:**
+    - Classe `Produto` com atributos `nome` e `preco`
+    - Dois métodos estáticos: `relatorioComString()` e `relatorioComStringBuilder()`
+    - Comparação de abordagens de construção de strings
+- **Exercício 2 - Classe Imutável:**
+    - Classe `Coordenada` imutável com `final` na classe e atributos
+    - Atributos `x` e `y` do tipo `double` com `final`
+    - Método `distancia()` para cálculo euclidiano
+    - Demonstração de imutabilidade completa
+
+#### 🎓 Conceitos Aplicados
+- ✅ Imutabilidade de Strings (teoria + prática)
+- ✅ StringBuilder para performance
+- ✅ Modificador `final` em classes
+- ✅ Modificador `final` em atributos
+- ✅ Modificador `final` em variáveis locais
+- ✅ Medição de performance com `System.currentTimeMillis()`
+- ✅ Criação de classes imutáveis
+
+#### 📊 Teste de Performance
+
+**Comparação String vs StringBuilder:**
+```java
+// Concatenação com String (LENTO)
+long inicio = System.currentTimeMillis();
+String teste = "";
+for (int i = 0; i < 1_000; i++) {
+    teste += i + ", ";  // Cria NOVO objeto a cada iteração
+}
+long fim = System.currentTimeMillis();
+IO.println("Tempo String: " + (fim - inicio));  // Ex: 4-6 ms
+
+// Concatenação com StringBuilder (RÁPIDO)
+long inicioSB = System.currentTimeMillis();
+StringBuilder builder = new StringBuilder();
+for (int i = 0; i < 1_000; i++) {
+    builder.append(i).append(", ");  // Modifica MESMO objeto
+}
+long fimSB = System.currentTimeMillis();
+IO.println("Tempo StringBuilder: " + (fimSB - inicioSB));  // Ex: 0-1 ms
+```
+
+**Resultado:** StringBuilder é **4-6x mais rápido** neste exemplo!
+
+#### 💡 Aprendizado Chave - Imutabilidade
+
+**String é Imutável:**
+```java
+String nome = "Refresco do Chaves";
+nome.toUpperCase();  // Cria NOVA string, mas não altera 'nome'
+IO.println(nome);    // Ainda é "Refresco do Chaves"
+
+// Para "modificar", precisa reatribuir:
+nome = nome.toUpperCase();  // Agora 'nome' aponta para novo objeto
+IO.println(nome);           // "REFRESCO DO CHAVES"
+```
+
+**Por que String é imutável?**
+- ✅ Segurança em ambientes multi-thread
+- ✅ String Pool (economia de memória)
+- ✅ Pode ser usada como chave em HashMap
+- ✅ Segurança (valores não podem ser alterados)
+
+#### 🎯 Modificador `final`
+
+**1. Final em Classes:**
+```java
+public final class Coordenada {  // Não pode ser herdada
+    // ...
+}
+
+// ❌ ERRO: Não pode estender classe final
+public class CoordenadaTridimensional extends Coordenada { }
+```
+
+**2. Final em Atributos:**
+```java
+public class Coordenada {
+    private final double x;  // Só pode ser atribuído UMA vez
+    private final double y;
+    
+    public Coordenada(double x, double y) {
+        this.x = x;  // Atribuição no construtor
+        this.y = y;
+    }
+    
+    // ❌ Não há setters! Atributos são final
+}
+```
+
+**3. Final em Variáveis Locais:**
+```java
+void calcular() {
+    final double PI = 3.14159;  // Constante local
+    // PI = 3.14;  // ❌ ERRO: não pode reatribuir
+}
+```
+
+#### 📝 Exercício 1 - Construtor de Relatórios
+
+**Classe Produto:**
+```java
+public class Produto {
+    private String nome;
+    private double preco;
+    
+    // Método 1: String (ineficiente em loops)
+    public static String relatorioComString(Produto[] produtos) {
+        String relatorio = "";
+        for (Produto p : produtos) {
+            relatorio += p.getNome() + " - R$ " + p.getPreco() + "\n";
+        }
+        return relatorio;
+    }
+    
+    // Método 2: StringBuilder (eficiente)
+    public static String relatorioComStringBuilder(Produto[] produtos) {
+        StringBuilder sb = new StringBuilder();
+        for (Produto p : produtos) {
+            sb.append(p.getNome())
+              .append(" - R$ ")
+              .append(p.getPreco())
+              .append("\n");
+        }
+        return sb.toString();
+    }
+}
+```
+
+**Aprendizado:**
+- String cria múltiplos objetos intermediários
+- StringBuilder modifica o mesmo objeto
+- Use StringBuilder para concatenação em loops!
+
+#### 📝 Exercício 2 - Classe Imutável
+
+**Classe Coordenada:**
+```java
+public final class Coordenada {  // 1. Classe final (não herda)
+    
+    private final double x;  // 2. Atributos final (não mudam)
+    private final double y;
+    
+    public Coordenada(double x, double y) {  // 3. Valores definidos no construtor
+        this.x = x;
+        this.y = y;
+    }
+    
+    // 4. Apenas getters (sem setters!)
+    public double getX() { return x; }
+    public double getY() { return y; }
+    
+    // 5. Métodos retornam novos objetos se precisarem "modificar"
+    public double distancia(Coordenada outra) {
+        double dx = outra.x - this.x;
+        double dy = outra.y - this.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+}
+```
+
+**Características de Classe Imutável:**
+1. ✅ Classe `final` (não pode ser herdada)
+2. ✅ Todos os atributos `private final`
+3. ✅ Valores definidos apenas no construtor
+4. ✅ Sem setters
+5. ✅ Métodos que "modificam" retornam novos objetos
+
+**Benefícios:**
+- Thread-safe (seguro em concorrência)
+- Pode ser compartilhado livremente
+- Ótimo para valores, coordenadas, datas, etc.
+
+#### 📂 Nova Estrutura de Pacotes
+
+```
+guisleri.exercicios.aula13.stringbuilder/
+├── exe01/
+│   ├── Main.java
+│   └── Produto.java
+└── exe02/
+    ├── Main.java
+    └── Coordenada.java (final class)
+
+mx.florinda/
+├── cli/
+│   ├── Main.java
+│   └── TesteString.java (atualizado com teste de performance)
+└── modelo/
+    └── ...
+```
+
+#### 🔍 Quando Usar Cada Um?
+
+| Situação | Use |
+|----------|-----|
+| Concatenação simples | String com `+` |
+| Loop concatenando strings | **StringBuilder** |
+| Ambiente multi-thread | StringBuffer |
+| Valores que não mudam | Atributos `final` |
+| Classes de valor | Classe `final` + atributos `final` |
+
+#### ⚠️ Observações Importantes
+
+**Final vs Imutabilidade:**
+- `final` = referência não pode mudar
+- Imutável = conteúdo do objeto não pode mudar
+
+```java
+final StringBuilder sb = new StringBuilder("Oi");
+sb.append(" mundo");  // ✅ OK! O conteúdo pode mudar
+sb = new StringBuilder();  // ❌ ERRO! A referência não pode mudar
+```
+
+**Tipos Primitivos com Final:**
+- `final double` ✅ Funciona normalmente
+- `final boolean` ✅ Funciona normalmente
+- `final int` ✅ Funciona normalmente
+
+---
+
 ### Aula 14 - Praticando com Arquivo CSV
 
 **Status:** ⏳ Aguardando implementação
@@ -415,12 +650,12 @@ ItemCardapio item = restaurante.getCardapio().getItensPorId(1L);
 
 | Métrica | Valor Atual |
 |---------|-------------|
-| Classes criadas | 10+ |
-| Linhas de código | ~500+ |
-| Conceitos de POO aplicados | 6 |
-| Exercícios resolvidos | 4 (aulas 10-12) |
-| Aulas versionadas | 3 de 19 |
-| Aulas concluídas | 12 de 19 |
+| Classes criadas | 12+ |
+| Linhas de código | ~700+ |
+| Conceitos de POO aplicados | 8 |
+| Exercícios resolvidos | 6 (aulas 10-13) |
+| Aulas versionadas | 4 de 19 |
+| Aulas concluídas | 13 de 19 |
 
 ---
 
@@ -429,7 +664,7 @@ ItemCardapio item = restaurante.getCardapio().getItensPorId(1L);
 **Bloco 4 - POO Avançada:**
 - [x] Aula 11 - Protected ✅
 - [x] Aula 12 - String ✅
-- [ ] Aula 13 - Imutabilidade, StringBuilder e Final
+- [x] Aula 13 - Imutabilidade, StringBuilder e Final ✅
 
 **Bloco 5 - Arquivos e Dados:**
 - [ ] Aula 14 - Praticando com Arquivo CSV
@@ -455,10 +690,21 @@ ItemCardapio item = restaurante.getCardapio().getItensPorId(1L);
 2. **Geração de Código**: Usar recursos da IDE para produtividade (Alt+Insert)
 3. **Getters/Setters**: Não são apenas "formalidade", garantem encapsulamento
 
+### Aula 11
+1. **Protected**: Modificador perfeito para herança entre pacotes
+2. **Geração de Código**: Usar recursos da IDE para produtividade (Alt+Insert)
+3. **Getters/Setters**: Não são apenas "formalidade", garantem encapsulamento
+
 ### Aula 12
 1. **Imutabilidade de Strings**: Métodos sempre retornam novas strings
 2. **equals() vs ==**: Sempre usar equals() para comparar conteúdo de strings
 3. **Métodos String**: Java oferece métodos poderosos para manipulação de texto
+
+### Aula 13
+1. **StringBuilder para Performance**: Concatenação em loops é ineficiente com String
+2. **Final para Imutabilidade**: Classe `final` + atributos `final` = classe imutável
+3. **Medição de Performance**: `System.currentTimeMillis()` para comparar abordagens
+4. **Classes Imutáveis**: Úteis para valores, coordenadas, objetos de domínio
 
 ---
 
@@ -486,4 +732,4 @@ ItemCardapio item = restaurante.getCardapio().getItensPorId(1L);
 ---
 
 _Documento atualizado em: Fevereiro 2026_
-_Última aula registrada: Aula 12_
+_Última aula registrada: Aula 13_

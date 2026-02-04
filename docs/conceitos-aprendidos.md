@@ -15,6 +15,9 @@ Este documento consolida os **conceitos de Programação Orientada a Objetos (PO
 7. [Enums](#7-enums)
 8. [Construtores](#8-construtores)
 9. [Manipulação de Strings](#9-manipulação-de-strings)
+10. [StringBuilder e Performance](#10-stringbuilder-e-performance)
+11. [Modificador Final](#11-modificador-final)
+12. [Classes Imutáveis](#12-classes-imutáveis)
 
 ---
 
@@ -577,6 +580,336 @@ if (partes.length > 1) {
 
 ---
 
+## 10. StringBuilder e Performance
+
+### 📖 Teoria
+`StringBuilder` é uma classe **mutável** projetada para construção eficiente de strings, especialmente em loops. Diferente de `String`, que é imutável, o `StringBuilder` pode ser modificado sem criar novos objetos a cada operação.
+
+### 🎯 Problema da Concatenação com String
+
+```java
+// ❌ INEFICIENTE - Cria MUITOS objetos
+String resultado = "";
+for (int i = 0; i < 1000; i++) {
+    resultado += i + ", ";  // Cada += cria um NOVO objeto String
+}
+// Milhares de objetos criados e descartados!
+```
+
+**O que acontece internamente:**
+1. Cria novo objeto String
+2. Copia conteúdo antigo + novo
+3. Descarta objeto anterior
+4. Repete 1000 vezes!
+
+### 💻 Solução com StringBuilder
+
+```java
+// ✅ EFICIENTE - Modifica o MESMO objeto
+StringBuilder sb = new StringBuilder();
+for (int i = 0; i < 1000; i++) {
+    sb.append(i).append(", ");  // Adiciona ao mesmo objeto
+}
+String resultado = sb.toString();  // Converte para String no final
+```
+
+### 📊 Teste de Performance (Aula 13)
+
+```java
+// String (LENTO)
+long inicio = System.currentTimeMillis();
+String teste = "";
+for (int i = 0; i < 1_000; i++) {
+    teste += i + ", ";
+}
+long fim = System.currentTimeMillis();
+System.out.println("Tempo String: " + (fim - inicio));  // 4-6 ms
+
+// StringBuilder (RÁPIDO)
+long inicioSB = System.currentTimeMillis();
+StringBuilder builder = new StringBuilder();
+for (int i = 0; i < 1_000; i++) {
+    builder.append(i).append(", ");
+}
+long fimSB = System.currentTimeMillis();
+System.out.println("Tempo StringBuilder: " + (fimSB - inicioSB));  // 0-1 ms
+```
+
+**Resultado:** StringBuilder é **4-6x mais rápido**!
+
+### 🎯 Métodos Principais
+
+```java
+StringBuilder sb = new StringBuilder();
+
+sb.append("texto");          // Adiciona ao final
+sb.append(123);              // Adiciona número
+sb.insert(0, "início ");     // Insere em posição específica
+sb.delete(0, 7);             // Remove caracteres
+sb.reverse();                // Inverte a string
+sb.length();                 // Tamanho atual
+sb.toString();               // Converte para String
+```
+
+### 🔍 StringBuilder vs StringBuffer
+
+| Característica | StringBuilder | StringBuffer |
+|----------------|---------------|--------------|
+| **Thread-safe** | ❌ Não | ✅ Sim |
+| **Performance** | ✅ Mais rápido | Mais lento |
+| **Quando usar** | Uso normal | Multi-threading |
+
+**Recomendação:** Use `StringBuilder` (mais rápido) a menos que precise de sincronização (thread-safe).
+
+### ✅ Onde foi usado
+- `TesteString.java` - Comparação de performance
+- Exercício 1 - Método `relatorioComStringBuilder()`
+
+---
+
+## 11. Modificador Final
+
+### 📖 Teoria
+O modificador `final` impõe restrições que tornam o código mais seguro e previsível. Seu comportamento varia conforme onde é aplicado:
+
+### 🎯 1. Final em Classes
+
+Uma classe `final` **não pode ser herdada**.
+
+```java
+public final class String {
+    // Ninguém pode fazer: class MinhaString extends String
+}
+
+public final class Coordenada {
+    // Classe imutável que não pode ser estendida
+}
+
+// ❌ ERRO DE COMPILAÇÃO
+public class CoordenadaTridimensional extends Coordenada {
+    // Cannot inherit from final 'Coordenada'
+}
+```
+
+**Quando usar:**
+- Classes que não devem ser estendidas por segurança
+- Classes imutáveis (como String)
+- Classes de utilitários
+
+### 🎯 2. Final em Atributos
+
+Um atributo `final` só pode ser atribuído **UMA vez**, na declaração ou no construtor.
+
+```java
+public class Coordenada {
+    private final double x;  // Só pode ser definido uma vez
+    private final double y;
+    
+    public Coordenada(double x, double y) {
+        this.x = x;  // ✅ Atribuição no construtor
+        this.y = y;  // ✅ Atribuição no construtor
+    }
+    
+    public void mover(double novoX) {
+        // this.x = novoX;  // ❌ ERRO! Não pode reatribuir
+    }
+    
+    // ✅ Apenas getters (sem setters)
+    public double getX() { return x; }
+    public double getY() { return y; }
+}
+```
+
+**Quando usar:**
+- Constantes
+- Valores que não devem mudar após criação do objeto
+- Classes imutáveis
+
+### 🎯 3. Final em Variáveis Locais
+
+```java
+void calcular() {
+    final double PI = 3.14159;  // Constante local
+    final int MAX_TENTATIVAS = 3;
+    
+    // PI = 3.14;  // ❌ ERRO! Não pode reatribuir
+    
+    for (final int i = 0; i < 10; i++) {  // ✅ Válido
+        // i = 5;  // ❌ ERRO dentro do loop
+    }
+}
+```
+
+**Quando usar:**
+- Constantes locais
+- Parâmetros que não devem ser modificados
+- Variáveis de loop (menos comum)
+
+### ⚠️ Final vs Imutabilidade
+
+**IMPORTANTE:** `final` não torna o objeto imutável, apenas a referência!
+
+```java
+final StringBuilder sb = new StringBuilder("Oi");
+sb.append(" mundo");  // ✅ OK! O conteúdo pode mudar
+IO.println(sb);       // "Oi mundo"
+
+sb = new StringBuilder();  // ❌ ERRO! A referência não pode mudar
+
+final List<String> lista = new ArrayList<>();
+lista.add("item");    // ✅ OK! O conteúdo pode mudar
+lista = new ArrayList<>();  // ❌ ERRO! A referência não pode mudar
+```
+
+### 💻 Aplicação no Projeto
+
+**Exercício 2 - Classe Coordenada:**
+```java
+public final class Coordenada {  // ← classe final
+    private final double x;      // ← atributos final
+    private final double y;
+    
+    public Coordenada(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+```
+
+### ✅ Onde foi usado
+- Exercício 2 - Classe `Coordenada` (final class + final attributes)
+
+---
+
+## 12. Classes Imutáveis
+
+### 📖 Teoria
+Uma **classe imutável** é aquela cujos objetos não podem ter seu estado modificado após a criação. Uma vez criado, o objeto permanece exatamente como foi inicializado.
+
+### 🎯 Benefícios
+
+- ✅ **Thread-safe**: Seguro em ambientes concorrentes (não precisa sincronização)
+- ✅ **Cacheable**: Pode ser compartilhado livremente
+- ✅ **Simples**: Sem efeitos colaterais inesperados
+- ✅ **Confiável**: Estado previsível
+
+### 📋 Checklist para Criar Classe Imutável
+
+1. ✅ Declare a classe como `final` (não pode ser herdada)
+2. ✅ Todos os atributos `private final`
+3. ✅ Inicialize atributos apenas no construtor
+4. ✅ **Sem setters** (apenas getters)
+5. ✅ Métodos que "modificam" retornam novos objetos
+
+### 💻 Exemplo Completo - Classe Coordenada
+
+```java
+// 1. Classe final
+public final class Coordenada {
+    
+    // 2. Atributos private final
+    private final double x;
+    private final double y;
+    
+    // 3. Inicialização apenas no construtor
+    public Coordenada(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+    
+    // 4. Apenas getters (sem setters!)
+    public double getX() {
+        return x;
+    }
+    
+    public double getY() {
+        return y;
+    }
+    
+    // 5. Métodos retornam novos objetos
+    public Coordenada mover(double deltaX, double deltaY) {
+        return new Coordenada(this.x + deltaX, this.y + deltaY);
+    }
+    
+    public double distancia(Coordenada outra) {
+        double dx = outra.x - this.x;
+        double dy = outra.y - this.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+    
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
+}
+```
+
+### 🎯 Uso da Classe Imutável
+
+```java
+Coordenada c1 = new Coordenada(2, 3);
+Coordenada c2 = c1.mover(3, 4);  // Retorna NOVA coordenada
+
+System.out.println(c1);  // (2, 3) - original não mudou!
+System.out.println(c2);  // (5, 7) - novo objeto
+
+double dist = c1.distancia(c2);
+System.out.println("Distância: " + dist);
+```
+
+### 📊 Exemplos de Classes Imutáveis em Java
+
+| Classe | Descrição |
+|--------|-----------|
+| `String` | Texto imutável |
+| `Integer`, `Double`, etc. | Wrappers de primitivos |
+| `LocalDate`, `LocalTime` | Datas e horas (Java 8+) |
+| `BigDecimal` | Números decimais precisos |
+
+### ⚠️ Cuidado com Objetos Mutáveis
+
+```java
+public final class Pessoa {
+    private final String nome;
+    private final List<String> hobbies;  // ⚠️ List é mutável!
+    
+    public Pessoa(String nome, List<String> hobbies) {
+        this.nome = nome;
+        // ❌ ERRADO: guarda referência direta
+        this.hobbies = hobbies;
+        
+        // ✅ CORRETO: cria cópia defensiva
+        this.hobbies = new ArrayList<>(hobbies);
+    }
+    
+    public List<String> getHobbies() {
+        // ❌ ERRADO: expõe lista interna
+        return hobbies;
+        
+        // ✅ CORRETO: retorna cópia
+        return new ArrayList<>(hobbies);
+    }
+}
+```
+
+### 🎯 Quando Usar Classes Imutáveis
+
+**Use para:**
+- ✅ Objetos de valor (coordenadas, dinheiro, datas)
+- ✅ Objetos de domínio simples
+- ✅ Chaves de HashMap/HashSet
+- ✅ Dados que não mudam (configurações, constantes)
+
+**Não use para:**
+- ❌ Objetos com estado que muda frequentemente
+- ❌ Entidades de banco de dados (geralmente mutáveis)
+- ❌ Builders e configuradores
+
+### ✅ Onde foi usado
+- Exercício 2 - Classe `Coordenada` (exemplo completo de classe imutável)
+
+---
+
 ## 💡 Boas Práticas Aplicadas
 
 1. ✅ **Nomes significativos**: Classes e métodos com nomes descritivos
@@ -588,6 +921,9 @@ if (partes.length > 1) {
 7. ✅ **Comparação de Strings**: Sempre usar `equals()`, nunca `==`
 8. ✅ **Validação de entrada**: Verificar null e índices antes de acessar
 9. ✅ **Imutabilidade**: Entender que métodos String retornam novas strings
+10. ✅ **StringBuilder em loops**: Usar para concatenação eficiente
+11. ✅ **Final para constantes**: Atributos que não mudam devem ser `final`
+12. ✅ **Classes imutáveis**: Usar `final` + atributos `final` para objetos de valor
 
 ---
 
@@ -600,4 +936,4 @@ if (partes.length > 1) {
 ---
 
 _Documento atualizado em: Fevereiro 2026_
-_Última revisão: Aula 12_
+_Última revisão: Aula 13_

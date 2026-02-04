@@ -187,7 +187,7 @@ Este item não contém glúten.
 10. ✅ **Pacotes, Modificadores de Acesso, Getters e Setters**
 11. ✅ **Protected**
 12. ✅ **String**
-13. ✅ **Imutabilidade, StringBuilder e Final** ← Você está aqui!
+13. ✅ **Imutabilidade, StringBuilder e Final** 
 14. ⏳ Praticando com Arquivo CSV
 15. ⏳ Praticando com Arquivo JSON
 16. ⏳ Refatoração e Interfaces

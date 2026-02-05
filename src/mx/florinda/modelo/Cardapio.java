@@ -2,45 +2,75 @@ package mx.florinda.modelo;
 
 import mx.florinda.modelo.isento.ItemCardapioIsento;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class Cardapio {
 
     private ItemCardapio[] itens;
 
-    public Cardapio() {
-        ItemCardapioBebida item1 = new ItemCardapioBebida(1L, "Refresco do Chaves",
-                "Suco de limão que parece de tamarindo e tem gosto de groselha.", 2.99, CategoriaCardapio.BEBIDAS);
+    public Cardapio(String nomeArquivo) throws IOException {
+        Path arquivo = Path.of(nomeArquivo);
+        String conteudoArquivo = Files.readString(arquivo);
 
-        ItemCardapioSemGluten item2 = new ItemCardapioSemGluten(2L, "Sanduíche de Presunto do Chaves",
-                "Sanduíche de presunto simples, mas feito com muito amor.", 3.50, CategoriaCardapio.PRATOS_PRINCIPAIS);
-        item2.setPromocao(2.99);
+        String[] linhasArquivo = conteudoArquivo.split("\n");
+        itens = new ItemCardapio[linhasArquivo.length];
 
-        ItemCardapio item3 = new ItemCardapio(3L, "Torta de Frango da Dona Florinda",
-                "Torta de frango com recheio cremoso e massa crocante.", 12.99, CategoriaCardapio.PRATOS_PRINCIPAIS);
-        item3.setPromocao(10.99);
+        for (int i = 0; i < linhasArquivo.length; i++) {
+            String linha = linhasArquivo[i].strip();
 
-        ItemCardapioSemGluten item4 = new ItemCardapioSemGluten(4L, "Pipoca do Quico",
-                "Balde de pipoca preparado com carinho pelo Quico.", 4.99, CategoriaCardapio.PRATOS_PRINCIPAIS);
-        item4.setPromocao(3.99);
+            if (linha.isEmpty()) {
+                continue;
+            }
 
-        ItemCardapio item5 = new ItemCardapio(5L, "Água de Jamaica",
-                "Água aromatizada com hibisco e toque de açúcar.", 2.5, CategoriaCardapio.BEBIDAS);
-        item5.setPromocao(2.0);
+            if (nomeArquivo.endsWith(".csv")) {
+                String[] partes = linha.split(";", -1);
 
-        ItemCardapio item6 = new ItemCardapioIsento(6L, "Churros do Chaves",
-                "Churros recheados com doce de leite, clássicos e irresistíveis.", 4.99, CategoriaCardapio.SOBREMESAS);
-        item6.setPromocao(3.99);
+                if (partes.length < 9) {
+                    throw new IOException("Linha CSV inválida (esperado 9 colunas, veio " + partes.length + "): " + linha);
+                }
 
-        ItemCardapio item7 = new ItemCardapioIsento(7L, "Tacos de Carnitas",
-                "Tacos recheados com carne tenra", 25.9, CategoriaCardapio.PRATOS_PRINCIPAIS);
+                long id = Long.parseLong(partes[0]);
+                String nome = partes[1];
+                String descricao = partes[2];
+                double preco = Double.parseDouble(partes[3]);
+                CategoriaCardapio categoria = CategoriaCardapio.valueOf(partes[4]);
 
-        itens = new ItemCardapio[7];
-        itens[0] = item1;
-        itens[1] = item2;
-        itens[2] = item3;
-        itens[3] = item4;
-        itens[4] = item5;
-        itens[5] = item6;
-        itens[6] = item7;
+                ItemCardapio item;
+
+                boolean impostoIsento = Boolean.parseBoolean(partes[7]);
+                boolean ehSemGluten = Boolean.parseBoolean(partes[8]);
+
+                if (impostoIsento) {
+                    item = new ItemCardapioIsento(id, nome, descricao, preco, categoria);
+                } else if (ehSemGluten) {
+                    item = new ItemCardapioSemGluten(id, nome, descricao, preco, categoria);
+                } else if (categoria == CategoriaCardapio.BEBIDAS) {
+                    item = new ItemCardapioBebida(id, nome, descricao, preco, categoria);
+                } else {
+                    item = new ItemCardapio(id, nome, descricao, preco, categoria);
+                }
+
+                boolean emPromocao = Boolean.parseBoolean(partes[5]);
+                if (emPromocao) {
+                    String descontoStr = partes[6];
+                    if (descontoStr == null || descontoStr.isBlank()) {
+                        throw new IOException("Item marcado em promoção, mas sem preço com desconto (coluna 6): " + linha);
+                    }
+                    double precoComDesconto = Double.parseDouble(descontoStr);
+                    item.setPromocao(precoComDesconto);
+                }
+
+                itens[i] = item;
+
+            } else if (nomeArquivo.endsWith(".json")) {
+
+            } else {
+                IO.println("Nome do arquivo inválido! - " + nomeArquivo);
+            }
+        }
     }
 
     public double getSomaDosPrecos() {

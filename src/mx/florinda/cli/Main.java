@@ -2,13 +2,14 @@ import mx.florinda.modelo.Cardapio;
 import mx.florinda.modelo.ItemCardapio;
 import mx.florinda.modelo.Restaurante;
 
-void main() {
+void main() throws Exception {
 
     Restaurante restaurante = new Restaurante("Florinda", "Av. 123 - Araras/SP");
-    Cardapio cardapio = new Cardapio();
+
+    String nomeArquivo = IO.readln("Digite o nome do arquivo: ");
+    Cardapio cardapio = new Cardapio(nomeArquivo);
 
     restaurante.setCardapio(cardapio);
-    Cardapio cardapioDoRestaurante = restaurante.getCardapio();
 
     restaurante.apresentarRestaurante();
 

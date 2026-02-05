@@ -18,6 +18,8 @@ Este documento consolida os **conceitos de Programação Orientada a Objetos (PO
 10. [StringBuilder e Performance](#10-stringbuilder-e-performance)
 11. [Modificador Final](#11-modificador-final)
 12. [Classes Imutáveis](#12-classes-imutáveis)
+13. [Manipulação de Arquivos](#13-manipulação-de-arquivos)
+14. [Tratamento de Exceções](#14-tratamento-de-exceções)
 
 ---
 
@@ -268,8 +270,8 @@ public class ItemCardapio {
     private long id;
     private String nome;
     
-    // DEFAULT (package-private) - Acessível no pacote mx.florinda.modelo
-    ItemCardapio(long id, String nome, ...) {
+    // PROTECTED - Acessível no pacote e subclasses
+    protected ItemCardapio(long id, String nome, ...) {
         this.id = id;
         this.nome = nome;
     }
@@ -283,7 +285,7 @@ public class ItemCardapio {
 
 ### 🎯 Estratégia Usada
 - **Atributos**: `private` (proteger dados)
-- **Construtores**: `default` (controlar criação dentro do pacote)
+- **Construtores**: `protected` (controlar criação, permitir herança)
 - **Getters/Setters**: `public` (interface de acesso)
 - **Métodos de negócio**: `public` (funcionalidades expostas)
 
@@ -319,13 +321,14 @@ ItemCardapio item = new ItemCardapio(
     CategoriaCardapio.SOBREMESAS  // Tipo seguro!
 );
 
-// Evita erros como:
-// categoria = "sobremesa"  // Erro de digitação
-// categoria = "DOCES"      // Categoria inválida
+// Conversão de String para Enum (Aula 14)
+String categoriaStr = "BEBIDAS";
+CategoriaCardapio categoria = CategoriaCardapio.valueOf(categoriaStr);
 ```
 
 ### ✅ Onde foi usado
 - `CategoriaCardapio` - Define categorias válidas do cardápio
+- Aula 14: Conversão de String para Enum ao ler CSV
 
 ---
 
@@ -365,548 +368,543 @@ public class ItemCardapioBebida extends ItemCardapio {
 }
 ```
 
+#### Construtor com Exceções (Aula 14)
+
+```java
+public Cardapio(String nomeArquivo) throws IOException {
+    // Construtor que pode lançar exceção
+    Path arquivo = Path.of(nomeArquivo);
+    String conteudo = Files.readString(arquivo);
+    // ... parsing
+}
+```
+
 ### ✅ Onde foi usado
 - Todas as classes do modelo têm construtores
 - Subclasses usam `super()` para chamar construtor do pai
-
----
-
-## 📊 Resumo de Conceitos por Classe/Tópico
-
-| Classe/Tópico | Encapsulamento | Herança | Polimorfismo | Composição | Enum | String |
-|---------------|----------------|---------|--------------|------------|------|--------|
-| `Restaurante` | ✅ | ❌ | ❌ | ✅ (tem Cardapio) | ❌ | ❌ |
-| `Cardapio` | ✅ | ❌ | ❌ | ✅ (tem ItemCardapio[]) | ❌ | ❌ |
-| `ItemCardapio` | ✅ | ✅ (pai) | ✅ | ❌ | ✅ (usa CategoriaCardapio) | ❌ |
-| `ItemCardapioBebida` | ✅ | ✅ (filho) | ✅ (override) | ❌ | ❌ | ❌ |
-| `ItemCardapioIsento` | ✅ | ✅ (filho) | ✅ (override) | ❌ | ❌ | ❌ |
-| `ItemCardapioSemGluten` | ✅ | ✅ (filho) | ✅ (override) | ❌ | ❌ | ❌ |
-| `CategoriaCardapio` | ❌ | ❌ | ❌ | ❌ | ✅ (é enum) | ❌ |
-| `TesteString` | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ (manipulação) |
-| Exercícios Aula 12 | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ (validação) |
-
----
-
-## 🎯 Princípios SOLID Aplicados
-
-### Single Responsibility (Responsabilidade Única)
-- ✅ Cada classe tem uma responsabilidade clara
-  - `Restaurante` - Gerencia dados do restaurante
-  - `Cardapio` - Gerencia coleção de itens
-  - `ItemCardapio` - Representa um item individual
-
-### Open/Closed (Aberto/Fechado)
-- ✅ Fácil adicionar novos tipos de itens sem modificar código existente
-  - Criar nova subclasse de `ItemCardapio`
-
-### Liskov Substitution (Substituição de Liskov)
-- ✅ Subclasses podem substituir classe pai sem quebrar o código
-  - `ItemCardapioBebida` pode ser usado onde `ItemCardapio` é esperado
+- Aula 14: Construtor do Cardapio com `throws IOException`
 
 ---
 
 ## 9. Manipulação de Strings
 
 ### 📖 Teoria
-Strings em Java são objetos **imutáveis** da classe `String` que representam sequências de caracteres. Isso significa que qualquer operação que "modifica" uma string na verdade cria uma nova string.
+Strings em Java são objetos **imutáveis** da classe `String` que representam sequências de caracteres.
 
-### 🎯 Imutabilidade
-
-```java
-String nome = "Refresco";
-String nomeMaiusculo = nome.toUpperCase();
-
-IO.println(nome);           // "Refresco" (original não mudou!)
-IO.println(nomeMaiusculo);  // "REFRESCO" (nova string criada)
-```
-
-**Por que imutáveis?**
-- ✅ Segurança em multithreading
-- ✅ Pool de strings (economia de memória)
-- ✅ Strings podem ser usadas como chaves em HashMap
-- ✅ Segurança (não podem ser alteradas após criação)
-
-### 💻 Aplicação no Projeto
-
-**Classe TesteString.java:**
-```java
-String nomeItem1 = "Refresco do Chaves";
-
-// Informações
-nomeItem1.length();        // 18
-nomeItem1.charAt(0);       // 'R'
-nomeItem1.isEmpty();       // false
-
-// Verificações
-nomeItem1.contains("Chaves");      // true
-nomeItem1.startsWith("Refresco");  // true
-nomeItem1.endsWith("Chaves");      // true
-
-// Divisão
-String[] pedacos = nomeItem1.split(" ");
-// ["Refresco", "do", "Chaves"]
-
-// Transformações
-nomeItem1.toUpperCase();              // "REFRESCO DO CHAVES"
-nomeItem1.toLowerCase();              // "refresco do chaves"
-nomeItem1.replace(" ", "-");          // "Refresco-do-Chaves"
-nomeItem1.substring(0, 8);            // "Refresco"
-nomeItem1.substring(12);              // "Chaves"
-nomeItem1.trim();                     // Remove espaços nas extremidades
-nomeItem1.concat(" gelado");          // "Refresco do Chaves gelado"
-```
-
-### ⚠️ Comparação de Strings - MUITO IMPORTANTE!
-
-```java
-String digitado = IO.readln("Digite: ");
-
-// ❌ ERRADO - Compara referências, não conteúdo
-if (nomeItem1 == digitado) { ... }
-
-// ✅ CORRETO - Compara conteúdo (case-sensitive)
-if (nomeItem1.equals(digitado)) { ... }
-
-// ✅ CORRETO - Compara conteúdo (ignora maiúsculas/minúsculas)
-if (nomeItem1.equalsIgnoreCase(digitado)) { ... }
-```
-
-**Por que não usar `==`?**
-- `==` compara **referências** (endereços de memória)
-- `equals()` compara **conteúdo** (caracteres)
-
-### 🎯 Métodos Principais Categorizados
+### 💻 Métodos Principais
 
 **Informações:**
 - `length()` - Tamanho da string
-- `charAt(int index)` - Caractere em determinada posição
+- `charAt(index)` - Caractere em uma posição
 - `isEmpty()` - Verifica se está vazia
 
 **Verificações:**
-- `contains(CharSequence s)` - Contém substring?
-- `startsWith(String prefix)` - Começa com?
-- `endsWith(String suffix)` - Termina com?
-
-**Comparações:**
-- `equals(Object obj)` - Conteúdo igual? (case-sensitive)
-- `equalsIgnoreCase(String another)` - Conteúdo igual? (case-insensitive)
-- `compareTo(String another)` - Comparação lexicográfica
+- `contains(String)` - Contém substring?
+- `startsWith(String)` - Começa com?
+- `endsWith(String)` - Termina com?
 
 **Transformações:**
-- `toUpperCase()` - Converte para maiúsculas
-- `toLowerCase()` - Converte para minúsculas
-- `trim()` - Remove espaços nas extremidades
-- `replace(char old, char new)` - Substitui caracteres
-- `concat(String str)` - Concatena strings
+- `toUpperCase()` / `toLowerCase()` - Converte case
+- `trim()` / `strip()` - Remove espaços
+- `replace(old, new)` - Substitui texto
 
 **Extração:**
-- `substring(int begin)` - Do índice até o final
-- `substring(int begin, int end)` - Entre índices
-- `split(String regex)` - Divide em array
-- `toCharArray()` - Converte para array de chars
+- `substring(start, end)` - Extrai substring
+- `split(delimiter)` - Divide em array
 
-### 💡 Casos de Uso no Projeto
+### 💻 Aplicação na Aula 14 (CSV)
 
-**1. Processamento de Nomes (Exercício 1):**
 ```java
-String nomeCompleto = "João da Silva";
-String[] partes = nomeCompleto.split(" ");
-String saudacao = "Olá, " + partes[0] + " " + partes[partes.length - 1];
-// "Olá, João Silva"
-```
+// Leitura do arquivo
+String conteudoArquivo = Files.readString(arquivo);
 
-**2. Validação de URL (Exercício 2):**
-```java
-String url = "https://exemplo.com.br";
-boolean inicioValido = url.startsWith("http://") || 
-                       url.startsWith("https://") || 
-                       url.startsWith("HTTP://");
-boolean fimValido = url.endsWith(".com") || url.endsWith(".com.br");
-// URL válida se ambos forem true
-```
+// Divisão em linhas
+String[] linhasArquivo = conteudoArquivo.split("\n");
 
-**3. Geração de Slugs:**
-```java
-String nomeItem = "Refresco do Chaves";
-String slug = nomeItem.toLowerCase().replace(" ", "-");
-// "refresco-do-chaves"
-```
+// Para cada linha
+String linha = linhasArquivo[i].strip();  // Remove espaços
 
-**4. Formatação de Exibição:**
-```java
-String nome = "   Churros   ";
-String limpo = nome.trim();  // "Churros"
-```
-
-### 🔍 Armadilhas Comuns
-
-**1. NullPointerException:**
-```java
-String nome = null;
-nome.length();  // ❌ ERRO! NullPointerException
-
-// ✅ CORRETO: Sempre verifique null primeiro
-if (nome != null && nome.length() > 0) { ... }
-```
-
-**2. IndexOutOfBoundsException:**
-```java
-String texto = "ABC";
-char c = texto.charAt(5);  // ❌ ERRO! Índice não existe
-
-// ✅ CORRETO: Verifique o tamanho primeiro
-if (index < texto.length()) {
-    char c = texto.charAt(index);
+// Verifica se linha está vazia
+if (linha.isEmpty()) {
+    continue;
 }
-```
 
-**3. split() com array vazio:**
-```java
-String nome = "João";
-String[] partes = nome.split(" ");
-String sobrenome = partes[1];  // ❌ ERRO! Pode não existir
+// Verifica tipo de arquivo
+if (nomeArquivo.endsWith(".csv")) {
+    // Divide em colunas (mantém vazias com -1)
+    String[] partes = linha.split(";", -1);
+}
 
-// ✅ CORRETO: Verifique o tamanho do array
-if (partes.length > 1) {
-    String sobrenome = partes[partes.length - 1];
+// Verifica campos vazios
+if (descontoStr == null || descontoStr.isBlank()) {
+    throw new IOException("Campo obrigatório vazio");
 }
 ```
 
 ### ✅ Onde foi usado
-- `TesteString.java` - Demonstração de todos os métodos
-- Exercício 1 - Processador de Nomes com `split()`
-- Exercício 2 - Validador de URL com `startsWith()` e `endsWith()`
-- Possíveis aplicações futuras: validação de entrada, formatação de dados
+- Aula 12: TesteString com métodos básicos
+- Aula 13: Comparação de performance (String vs StringBuilder)
+- **Aula 14: Parsing de CSV** ⭐
 
 ---
 
 ## 10. StringBuilder e Performance
 
 ### 📖 Teoria
-`StringBuilder` é uma classe **mutável** projetada para construção eficiente de strings, especialmente em loops. Diferente de `String`, que é imutável, o `StringBuilder` pode ser modificado sem criar novos objetos a cada operação.
+`StringBuilder` é uma classe **mutável** para construção eficiente de strings.
 
-### 🎯 Problema da Concatenação com String
+### 💻 Comparação
 
 ```java
-// ❌ INEFICIENTE - Cria MUITOS objetos
+// ❌ String (cria muitos objetos)
 String resultado = "";
 for (int i = 0; i < 1000; i++) {
-    resultado += i + ", ";  // Cada += cria um NOVO objeto String
+    resultado += i + ", ";
 }
-// Milhares de objetos criados e descartados!
-```
 
-**O que acontece internamente:**
-1. Cria novo objeto String
-2. Copia conteúdo antigo + novo
-3. Descarta objeto anterior
-4. Repete 1000 vezes!
-
-### 💻 Solução com StringBuilder
-
-```java
-// ✅ EFICIENTE - Modifica o MESMO objeto
+// ✅ StringBuilder (modifica mesmo objeto)
 StringBuilder sb = new StringBuilder();
 for (int i = 0; i < 1000; i++) {
-    sb.append(i).append(", ");  // Adiciona ao mesmo objeto
+    sb.append(i).append(", ");
 }
-String resultado = sb.toString();  // Converte para String no final
+String resultado = sb.toString();
 ```
-
-### 📊 Teste de Performance (Aula 13)
-
-```java
-// String (LENTO)
-long inicio = System.currentTimeMillis();
-String teste = "";
-for (int i = 0; i < 1_000; i++) {
-    teste += i + ", ";
-}
-long fim = System.currentTimeMillis();
-System.out.println("Tempo String: " + (fim - inicio));  // 4-6 ms
-
-// StringBuilder (RÁPIDO)
-long inicioSB = System.currentTimeMillis();
-StringBuilder builder = new StringBuilder();
-for (int i = 0; i < 1_000; i++) {
-    builder.append(i).append(", ");
-}
-long fimSB = System.currentTimeMillis();
-System.out.println("Tempo StringBuilder: " + (fimSB - inicioSB));  // 0-1 ms
-```
-
-**Resultado:** StringBuilder é **4-6x mais rápido**!
-
-### 🎯 Métodos Principais
-
-```java
-StringBuilder sb = new StringBuilder();
-
-sb.append("texto");          // Adiciona ao final
-sb.append(123);              // Adiciona número
-sb.insert(0, "início ");     // Insere em posição específica
-sb.delete(0, 7);             // Remove caracteres
-sb.reverse();                // Inverte a string
-sb.length();                 // Tamanho atual
-sb.toString();               // Converte para String
-```
-
-### 🔍 StringBuilder vs StringBuffer
-
-| Característica | StringBuilder | StringBuffer |
-|----------------|---------------|--------------|
-| **Thread-safe** | ❌ Não | ✅ Sim |
-| **Performance** | ✅ Mais rápido | Mais lento |
-| **Quando usar** | Uso normal | Multi-threading |
-
-**Recomendação:** Use `StringBuilder` (mais rápido) a menos que precise de sincronização (thread-safe).
 
 ### ✅ Onde foi usado
-- `TesteString.java` - Comparação de performance
-- Exercício 1 - Método `relatorioComStringBuilder()`
+- Aula 13: Teste de performance
+- Exercício: Geração de relatórios
 
 ---
 
 ## 11. Modificador Final
 
 ### 📖 Teoria
-O modificador `final` impõe restrições que tornam o código mais seguro e previsível. Seu comportamento varia conforme onde é aplicado:
+O modificador `final` impõe restrições de imutabilidade.
 
-### 🎯 1. Final em Classes
+### 🎯 Aplicações
 
-Uma classe `final` **não pode ser herdada**.
-
+**1. Classes final (não podem ser herdadas):**
 ```java
-public final class String {
-    // Ninguém pode fazer: class MinhaString extends String
-}
-
-public final class Coordenada {
-    // Classe imutável que não pode ser estendida
-}
-
-// ❌ ERRO DE COMPILAÇÃO
-public class CoordenadaTridimensional extends Coordenada {
-    // Cannot inherit from final 'Coordenada'
-}
+public final class String { }
 ```
 
-**Quando usar:**
-- Classes que não devem ser estendidas por segurança
-- Classes imutáveis (como String)
-- Classes de utilitários
-
-### 🎯 2. Final em Atributos
-
-Um atributo `final` só pode ser atribuído **UMA vez**, na declaração ou no construtor.
-
+**2. Atributos final (só podem ser atribuídos uma vez):**
 ```java
-public class Coordenada {
-    private final double x;  // Só pode ser definido uma vez
-    private final double y;
-    
-    public Coordenada(double x, double y) {
-        this.x = x;  // ✅ Atribuição no construtor
-        this.y = y;  // ✅ Atribuição no construtor
-    }
-    
-    public void mover(double novoX) {
-        // this.x = novoX;  // ❌ ERRO! Não pode reatribuir
-    }
-    
-    // ✅ Apenas getters (sem setters)
-    public double getX() { return x; }
-    public double getY() { return y; }
-}
+private final double x;
 ```
 
-**Quando usar:**
-- Constantes
-- Valores que não devem mudar após criação do objeto
-- Classes imutáveis
-
-### 🎯 3. Final em Variáveis Locais
-
+**3. Variáveis locais final:**
 ```java
-void calcular() {
-    final double PI = 3.14159;  // Constante local
-    final int MAX_TENTATIVAS = 3;
-    
-    // PI = 3.14;  // ❌ ERRO! Não pode reatribuir
-    
-    for (final int i = 0; i < 10; i++) {  // ✅ Válido
-        // i = 5;  // ❌ ERRO dentro do loop
-    }
-}
-```
-
-**Quando usar:**
-- Constantes locais
-- Parâmetros que não devem ser modificados
-- Variáveis de loop (menos comum)
-
-### ⚠️ Final vs Imutabilidade
-
-**IMPORTANTE:** `final` não torna o objeto imutável, apenas a referência!
-
-```java
-final StringBuilder sb = new StringBuilder("Oi");
-sb.append(" mundo");  // ✅ OK! O conteúdo pode mudar
-IO.println(sb);       // "Oi mundo"
-
-sb = new StringBuilder();  // ❌ ERRO! A referência não pode mudar
-
-final List<String> lista = new ArrayList<>();
-lista.add("item");    // ✅ OK! O conteúdo pode mudar
-lista = new ArrayList<>();  // ❌ ERRO! A referência não pode mudar
-```
-
-### 💻 Aplicação no Projeto
-
-**Exercício 2 - Classe Coordenada:**
-```java
-public final class Coordenada {  // ← classe final
-    private final double x;      // ← atributos final
-    private final double y;
-    
-    public Coordenada(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
-}
+final double PI = 3.14159;
 ```
 
 ### ✅ Onde foi usado
-- Exercício 2 - Classe `Coordenada` (final class + final attributes)
+- Aula 13: Classe `Coordenada` imutável
 
 ---
 
 ## 12. Classes Imutáveis
 
 ### 📖 Teoria
-Uma **classe imutável** é aquela cujos objetos não podem ter seu estado modificado após a criação. Uma vez criado, o objeto permanece exatamente como foi inicializado.
+Classe cujos objetos não podem ter estado modificado após criação.
 
-### 🎯 Benefícios
+### 📋 Checklist
 
-- ✅ **Thread-safe**: Seguro em ambientes concorrentes (não precisa sincronização)
-- ✅ **Cacheable**: Pode ser compartilhado livremente
-- ✅ **Simples**: Sem efeitos colaterais inesperados
-- ✅ **Confiável**: Estado previsível
+1. ✅ Classe `final`
+2. ✅ Atributos `private final`
+3. ✅ Inicialização apenas no construtor
+4. ✅ Sem setters
+5. ✅ Métodos retornam novos objetos
 
-### 📋 Checklist para Criar Classe Imutável
-
-1. ✅ Declare a classe como `final` (não pode ser herdada)
-2. ✅ Todos os atributos `private final`
-3. ✅ Inicialize atributos apenas no construtor
-4. ✅ **Sem setters** (apenas getters)
-5. ✅ Métodos que "modificam" retornam novos objetos
-
-### 💻 Exemplo Completo - Classe Coordenada
+### 💻 Exemplo
 
 ```java
-// 1. Classe final
 public final class Coordenada {
-    
-    // 2. Atributos private final
     private final double x;
     private final double y;
     
-    // 3. Inicialização apenas no construtor
     public Coordenada(double x, double y) {
         this.x = x;
         this.y = y;
     }
     
-    // 4. Apenas getters (sem setters!)
-    public double getX() {
-        return x;
-    }
+    public double getX() { return x; }
+    public double getY() { return y; }
     
-    public double getY() {
-        return y;
-    }
-    
-    // 5. Métodos retornam novos objetos
-    public Coordenada mover(double deltaX, double deltaY) {
-        return new Coordenada(this.x + deltaX, this.y + deltaY);
-    }
-    
-    public double distancia(Coordenada outra) {
-        double dx = outra.x - this.x;
-        double dy = outra.y - this.y;
-        return Math.sqrt(dx * dx + dy * dy);
-    }
-    
-    @Override
-    public String toString() {
-        return "(" + x + ", " + y + ")";
+    public Coordenada mover(double dx, double dy) {
+        return new Coordenada(x + dx, y + dy);
     }
 }
 ```
-
-### 🎯 Uso da Classe Imutável
-
-```java
-Coordenada c1 = new Coordenada(2, 3);
-Coordenada c2 = c1.mover(3, 4);  // Retorna NOVA coordenada
-
-System.out.println(c1);  // (2, 3) - original não mudou!
-System.out.println(c2);  // (5, 7) - novo objeto
-
-double dist = c1.distancia(c2);
-System.out.println("Distância: " + dist);
-```
-
-### 📊 Exemplos de Classes Imutáveis em Java
-
-| Classe | Descrição |
-|--------|-----------|
-| `String` | Texto imutável |
-| `Integer`, `Double`, etc. | Wrappers de primitivos |
-| `LocalDate`, `LocalTime` | Datas e horas (Java 8+) |
-| `BigDecimal` | Números decimais precisos |
-
-### ⚠️ Cuidado com Objetos Mutáveis
-
-```java
-public final class Pessoa {
-    private final String nome;
-    private final List<String> hobbies;  // ⚠️ List é mutável!
-    
-    public Pessoa(String nome, List<String> hobbies) {
-        this.nome = nome;
-        // ❌ ERRADO: guarda referência direta
-        this.hobbies = hobbies;
-        
-        // ✅ CORRETO: cria cópia defensiva
-        this.hobbies = new ArrayList<>(hobbies);
-    }
-    
-    public List<String> getHobbies() {
-        // ❌ ERRADO: expõe lista interna
-        return hobbies;
-        
-        // ✅ CORRETO: retorna cópia
-        return new ArrayList<>(hobbies);
-    }
-}
-```
-
-### 🎯 Quando Usar Classes Imutáveis
-
-**Use para:**
-- ✅ Objetos de valor (coordenadas, dinheiro, datas)
-- ✅ Objetos de domínio simples
-- ✅ Chaves de HashMap/HashSet
-- ✅ Dados que não mudam (configurações, constantes)
-
-**Não use para:**
-- ❌ Objetos com estado que muda frequentemente
-- ❌ Entidades de banco de dados (geralmente mutáveis)
-- ❌ Builders e configuradores
 
 ### ✅ Onde foi usado
-- Exercício 2 - Classe `Coordenada` (exemplo completo de classe imutável)
+- Aula 13: Classe `Coordenada`
+
+---
+
+## 13. Manipulação de Arquivos
+
+### 📖 Teoria
+Java oferece APIs modernas para trabalhar com arquivos no pacote `java.nio.file`.
+
+### 💻 Conceitos da Aula 14
+
+#### 1. Path - Representa caminho de arquivo
+
+```java
+import java.nio.file.Path;
+
+Path arquivo = Path.of("itens-cardapio.csv");
+Path absoluto = Path.of("/home/usuario/dados.csv");
+```
+
+#### 2. Files - Operações com arquivos
+
+```java
+import java.nio.file.Files;
+
+// Ler arquivo inteiro como String
+String conteudo = Files.readString(arquivo);
+
+// Outras operações (não usadas ainda)
+boolean existe = Files.exists(arquivo);
+long tamanho = Files.size(arquivo);
+```
+
+#### 3. Leitura e Parsing
+
+```java
+public Cardapio(String nomeArquivo) throws IOException {
+    // 1. Criar Path
+    Path arquivo = Path.of(nomeArquivo);
+    
+    // 2. Ler conteúdo
+    String conteudoArquivo = Files.readString(arquivo);
+    
+    // 3. Dividir em linhas
+    String[] linhas = conteudoArquivo.split("\n");
+    
+    // 4. Processar cada linha
+    for (String linha : linhas) {
+        linha = linha.strip();
+        
+        if (linha.isEmpty()) {
+            continue;
+        }
+        
+        // 5. Dividir em colunas
+        String[] partes = linha.split(";", -1);
+        
+        // 6. Extrair dados
+        long id = Long.parseLong(partes[0]);
+        String nome = partes[1];
+        // ...
+    }
+}
+```
+
+### 🎯 Parsing de Dados
+
+**Conversão de Strings para Tipos Primitivos:**
+
+```java
+// String → long
+long id = Long.parseLong("123");
+
+// String → double
+double preco = Double.parseDouble("4.99");
+
+// String → boolean
+boolean ativo = Boolean.parseBoolean("true");
+
+// String → Enum
+CategoriaCardapio categoria = CategoriaCardapio.valueOf("BEBIDAS");
+```
+
+### ⚠️ Tratamento de Campos Vazios
+
+```java
+// split normal: ignora campos vazios no final
+String[] partes1 = "1;nome;".split(";");    // 2 elementos
+
+// split com -1: mantém campos vazios
+String[] partes2 = "1;nome;".split(";", -1); // 3 elementos
+
+// Verificar se campo está vazio
+if (campo == null || campo.isBlank()) {
+    // Campo vazio
+}
+```
+
+### 📊 Formato CSV Usado
+
+```
+Coluna 0: id (long)
+Coluna 1: nome (String)
+Coluna 2: descricao (String)
+Coluna 3: preco (double)
+Coluna 4: categoria (String → Enum)
+Coluna 5: emPromocao (String → boolean)
+Coluna 6: precoComDesconto (String → double, pode estar vazio)
+Coluna 7: impostoIsento (String → boolean)
+Coluna 8: ehSemGluten (String → boolean)
+```
+
+### 💡 Validações Implementadas
+
+```java
+// 1. Número de colunas
+if (partes.length < 9) {
+    throw new IOException("Linha CSV inválida: esperado 9 colunas");
+}
+
+// 2. Regra de negócio
+if (emPromocao && descontoStr.isBlank()) {
+    throw new IOException("Item em promoção deve ter desconto");
+}
+
+// 3. Tipo de arquivo
+if (!nomeArquivo.endsWith(".csv")) {
+    System.out.println("Formato inválido");
+}
+```
+
+### 🎯 Instanciação Dinâmica
+
+```java
+ItemCardapio item;
+
+// Escolhe subclasse baseado nos flags
+if (impostoIsento) {
+    item = new ItemCardapioIsento(...);
+} else if (ehSemGluten) {
+    item = new ItemCardapioSemGluten(...);
+} else if (categoria == CategoriaCardapio.BEBIDAS) {
+    item = new ItemCardapioBebida(...);
+} else {
+    item = new ItemCardapio(...);
+}
+
+// Configura promoção se necessário
+if (emPromocao) {
+    item.setPromocao(precoComDesconto);
+}
+```
+
+### ✅ Onde foi usado
+- **Aula 14: Leitura de CSV completa** ⭐
+- Construtor do Cardapio refatorado
+- Validação de dados estruturados
+- Conversão de tipos
+
+---
+
+## 14. Tratamento de Exceções
+
+### 📖 Teoria
+Exceções são eventos anormais que ocorrem durante a execução de um programa. Java oferece mecanismos para tratar esses erros de forma elegante.
+
+### 🎯 IOException
+
+`IOException` é uma **exceção checked** (verificada) que deve ser tratada ou declarada.
+
+**O que é checked exception?**
+- Compilador obriga a tratar ou declarar
+- Geralmente representa problemas recuperáveis
+- Comum em operações de I/O (Input/Output)
+
+### 💻 Declarando Exceção (throws)
+
+```java
+public Cardapio(String nomeArquivo) throws IOException {
+    // Se algo der errado, lança a exceção
+    Path arquivo = Path.of(nomeArquivo);
+    String conteudo = Files.readString(arquivo);  // Pode lançar IOException
+}
+```
+
+**O que `throws` significa:**
+- "Este método PODE lançar IOException"
+- Quem chamar o método DEVE tratar ou propagar a exceção
+- Não trata o erro aqui, passa responsabilidade para cima
+
+### 💻 Lançando Exceção (throw)
+
+```java
+if (partes.length < 9) {
+    throw new IOException("Linha CSV inválida: esperado 9 colunas, veio " + partes.length);
+}
+
+if (emPromocao && descontoStr.isBlank()) {
+    throw new IOException("Item em promoção sem desconto");
+}
+```
+
+**O que `throw` significa:**
+- "LANCE esta exceção agora"
+- Cria uma nova exceção com mensagem
+- Interrompe execução normal do método
+
+### 💻 Tratando Exceção (try-catch)
+
+```java
+// No Main (quem chama)
+try {
+    String nomeArquivo = IO.readln("Digite o nome do arquivo: ");
+    Cardapio cardapio = new Cardapio(nomeArquivo);
+    // Código continua normalmente
+} catch (IOException e) {
+    System.out.println("Erro ao ler arquivo: " + e.getMessage());
+    // Programa não quebra, tratou o erro
+}
+```
+
+### 🎯 Diferença: throws vs throw
+
+| `throws` | `throw` |
+|----------|---------|
+| Na **assinatura do método** | **Dentro do método** |
+| **Declara** que pode lançar | **Lança** a exceção |
+| `throws IOException` | `throw new IOException()` |
+| Pode listar múltiplas | Lança uma por vez |
+
+### 📊 Fluxo de Exceções
+
+```
+Main.java
+    ↓ chama
+Cardapio(String) throws IOException  ← Declara que pode lançar
+    ↓ lê arquivo
+Files.readString() throws IOException  ← Pode lançar
+    ↓ arquivo não existe
+IOException é lançada ← throw
+    ↓ propaga
+volta para Main
+    ↓ tratamento
+try-catch captura ← catch
+    ↓
+Programa continua
+```
+
+### 💡 Por que usar Exceções?
+
+**Antes (sem exceções):**
+```java
+public boolean carregarCardapio(String arquivo) {
+    // Retorna true/false
+    // Como saber O QUE deu errado?
+    return false;
+}
+```
+
+**Depois (com exceções):**
+```java
+public void carregarCardapio(String arquivo) throws IOException {
+    // Lança exceção com mensagem detalhada
+    throw new IOException("Arquivo não encontrado: " + arquivo);
+}
+```
+
+**Vantagens:**
+- ✅ Mensagens de erro detalhadas
+- ✅ Separa código normal de tratamento de erros
+- ✅ Pode capturar em níveis diferentes
+- ✅ Stack trace para debug
+
+### 🎯 Tipos de Exceções
+
+**1. Checked (Verificadas):**
+- Compilador obriga a tratar
+- Exemplo: `IOException`, `FileNotFoundException`
+- Problemas recuperáveis
+
+**2. Unchecked (Não Verificadas):**
+- Compilador não obriga a tratar
+- Exemplo: `NullPointerException`, `ArrayIndexOutOfBoundsException`
+- Erros de programação
+
+**3. Errors:**
+- Problemas graves do sistema
+- Exemplo: `OutOfMemoryError`
+- Geralmente não devem ser capturados
+
+### ⚠️ Erros Comuns na Aula 14
+
+**1. Arquivo não encontrado:**
+```java
+Path arquivo = Path.of("cardapio.csv");  // Arquivo não existe
+Files.readString(arquivo);  // IOException: arquivo não encontrado
+```
+
+**2. Parsing inválido:**
+```java
+long id = Long.parseLong("abc");  // NumberFormatException
+double preco = Double.parseDouble("R$4.99");  // NumberFormatException
+```
+
+**3. Enum inválido:**
+```java
+CategoriaCardapio.valueOf("LANCHES");  // IllegalArgumentException
+```
+
+**4. Array index:**
+```java
+String[] partes = linha.split(";");  // 2 elementos
+String campo = partes[5];  // ArrayIndexOutOfBoundsException
+```
+
+### 💻 Exemplo Completo
+
+```java
+// Cardapio.java (declara que pode lançar)
+public Cardapio(String nomeArquivo) throws IOException {
+    try {
+        Path arquivo = Path.of(nomeArquivo);
+        String conteudo = Files.readString(arquivo);
+        
+        // ... validações
+        if (partes.length < 9) {
+            throw new IOException("CSV inválido");  // Lança exceção
+        }
+        
+        // ... parsing pode lançar NumberFormatException (unchecked)
+        long id = Long.parseLong(partes[0]);
+        
+    } catch (NumberFormatException e) {
+        // Captura exceção de parsing e relança como IOException
+        throw new IOException("Erro ao converter número: " + e.getMessage());
+    }
+}
+
+// Main.java (trata a exceção)
+public static void main(String[] args) {
+    try {
+        Cardapio cardapio = new Cardapio("itens-cardapio.csv");
+        System.out.println("Cardápio carregado!");
+    } catch (IOException e) {
+        System.out.println("Erro: " + e.getMessage());
+        e.printStackTrace();  // Mostra stack trace para debug
+    }
+}
+```
+
+### ✅ Onde foi usado
+- **Aula 14: IOException em operações de arquivo** ⭐
+- Declaração: `throws IOException` no construtor
+- Lançamento: `throw new IOException(...)` nas validações
+- Tratamento: `try-catch` no Main (será implementado na Aula 19)
+
+---
+
+## 📊 Resumo de Conceitos por Aula
+
+| Aula | Conceitos Principais |
+|------|---------------------|
+| Aula 10 | Composição, Encapsulamento, Getters/Setters |
+| Aula 11 | Modificador Protected, Geradores IDE |
+| Aula 12 | Manipulação de Strings, Comparação (equals) |
+| Aula 13 | StringBuilder, Final, Classes Imutáveis |
+| **Aula 14** | **Arquivos (Path, Files), Parsing CSV, IOException, Conversão de Tipos** |
 
 ---
 
@@ -916,7 +914,7 @@ public final class Pessoa {
 2. ✅ **Convenções Java**: CamelCase para classes, camelCase para métodos
 3. ✅ **Getters/Setters**: Padrão JavaBeans
 4. ✅ **Anotação @Override**: Documentar sobrescrita de métodos
-5. ✅ **Construtores package-private**: Controlar instanciação
+5. ✅ **Construtores protected**: Controlar instanciação
 6. ✅ **Organização em pacotes**: Separar responsabilidades
 7. ✅ **Comparação de Strings**: Sempre usar `equals()`, nunca `==`
 8. ✅ **Validação de entrada**: Verificar null e índices antes de acessar
@@ -924,16 +922,22 @@ public final class Pessoa {
 10. ✅ **StringBuilder em loops**: Usar para concatenação eficiente
 11. ✅ **Final para constantes**: Atributos que não mudam devem ser `final`
 12. ✅ **Classes imutáveis**: Usar `final` + atributos `final` para objetos de valor
+13. ✅ **Separação dados/lógica**: Dados em arquivos, lógica no código
+14. ✅ **Validações robustas**: Verificar estrutura antes de processar
+15. ✅ **Exceções descritivas**: Mensagens claras sobre o erro
+16. ✅ **split com -1**: Preservar campos vazios no CSV
 
 ---
 
 ## 📚 Referências
 
 - [Oracle Java Tutorials - OOP Concepts](https://docs.oracle.com/javase/tutorial/java/concepts/)
+- [Oracle Java Tutorials - File I/O](https://docs.oracle.com/javase/tutorial/essential/io/)
+- [Oracle Java Tutorials - Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/)
 - [Effective Java - Joshua Bloch](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 - Slides e materiais do curso Java Elite - UNIPDS
 
 ---
 
 _Documento atualizado em: Fevereiro 2026_
-_Última revisão: Aula 13_
+_Última revisão: Aula 14_

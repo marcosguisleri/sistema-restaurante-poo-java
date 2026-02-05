@@ -25,6 +25,8 @@ Este é um sistema de cardápio digital inspirado no universo do **Chaves**, des
 - ✅ StringBuilder e Performance
 - ✅ Modificador Final
 - ✅ Classes Imutáveis
+- ✅ **Leitura de Arquivos CSV** ← Novidade da Aula 14!
+- ✅ **Tratamento de Exceções (IOException)**
 
 ---
 
@@ -37,6 +39,7 @@ Este é um sistema de cardápio digital inspirado no universo do **Chaves**, des
 - 🌾 Identificação de itens sem glúten
 - 🔍 Busca de itens por ID
 - 📊 Relatórios (soma de preços, itens em promoção, etc.)
+- 📄 **Carregamento dinâmico de cardápio via arquivo CSV** ⭐
 
 ---
 
@@ -47,10 +50,9 @@ sistema-restaurante-poo-java/
 ├── src/
 │   ├── mx/florinda/
 │   │   ├── cli/
-│   │   │   ├── Main.java                    # Ponto de entrada da aplicação
-│   │   │   └── TesteString.java             # Pratica métodos String + StringBuilder
+│   │   │   └── Main.java                    # Ponto de entrada da aplicação
 │   │   └── modelo/
-│   │       ├── Cardapio.java                # Gerencia a coleção de itens
+│   │       ├── Cardapio.java                # Gerencia a coleção de itens (refatorado!)
 │   │       ├── CategoriaCardapio.java       # Enum com categorias
 │   │       ├── ItemCardapio.java            # Classe base dos itens
 │   │       ├── ItemCardapioBebida.java      # Especialização para bebidas
@@ -67,6 +69,8 @@ sistema-restaurante-poo-java/
 │           └── exe02/
 │               ├── Main.java                # Teste de Coordenada
 │               └── Coordenada.java          # Classe imutável
+├── itens-cardapio.csv                       # Dados do cardápio (CSV) ⭐ NOVO
+├── itens-cardapio.json                      # Dados do cardápio (JSON) - em breve
 ├── docs/
 │   ├── evolucao-do-projeto.md              # Histórico de mudanças
 │   └── conceitos-aprendidos.md             # Conceitos de POO aplicados
@@ -96,7 +100,43 @@ cd sistema-restaurante-poo-java
 
 3. Execute a classe `Main.java` localizada em `src/mx/florinda/cli/`
 
-4. Siga as instruções no console para interagir com o sistema
+4. **Digite o nome do arquivo quando solicitado:**
+```
+Digite o nome do arquivo: itens-cardapio.csv
+```
+
+5. Siga as instruções no console para interagir com o sistema
+
+---
+
+## 📄 Arquivos de Dados
+
+### Formato CSV (itens-cardapio.csv)
+
+O cardápio é carregado de um arquivo CSV com 9 colunas separadas por ponto-e-vírgula (`;`):
+
+```csv
+id;nome;descricao;preco;categoria;emPromocao;precoComDesconto;impostoIsento;ehSemGluten
+1;Refresco do Chaves;Suco de limão...;2.99;BEBIDAS;false;;false;false
+2;Sanduíche de Presunto;Sanduíche simples...;3.50;PRATOS_PRINCIPAIS;true;2.99;false;true
+```
+
+**Estrutura:**
+- `id`: Identificador único (long)
+- `nome`: Nome do item
+- `descricao`: Descrição detalhada
+- `preco`: Preço em reais (double)
+- `categoria`: ENTRADA, PRATOS_PRINCIPAIS, SOBREMESAS, BEBIDAS
+- `emPromocao`: true/false
+- `precoComDesconto`: Preço promocional (obrigatório se emPromocao=true, vazio caso contrário)
+- `impostoIsento`: true/false
+- `ehSemGluten`: true/false
+
+**Vantagens:**
+- ✅ Adicione itens sem recompilar o código
+- ✅ Edite preços instantaneamente
+- ✅ Configure promoções facilmente
+- ✅ Escala para qualquer quantidade de itens
 
 ---
 
@@ -126,9 +166,25 @@ ItemCardapio (classe pai)
 ### 5. **Enums**
 - `CategoriaCardapio` para tipagem segura de categorias
 
+### 6. **Manipulação de Arquivos** ⭐
+- Leitura com `java.nio.file.Path` e `Files`
+- Parsing de dados estruturados (CSV)
+- Validação de integridade dos dados
+
+### 7. **Tratamento de Exceções** ⭐
+- `IOException` para erros de leitura
+- Validações com mensagens descritivas
+- Tratamento robusto de erros
+
 ---
 
 ## 🎯 Exemplos de Uso
+
+### Inicialização do Sistema
+```
+Digite o nome do arquivo: itens-cardapio.csv
+Cardápio carregado com sucesso! 7 itens disponíveis.
+```
 
 ### Consultar item do cardápio
 ```
@@ -158,6 +214,36 @@ Este item não contém glúten.
 
 ---
 
+## 🔄 Evolução do Código (Aula 14)
+
+### ANTES (Instanciação Manual)
+```java
+public Cardapio() {
+    itens = new ItemCardapio[7];
+    itens[0] = new ItemCardapio(1, "Refresco do Chaves", ...);
+    itens[1] = new ItemCardapioSemGluten(2, "Sanduíche", ...);
+    // ... mais 5 itens
+    
+    // Configurar promoções manualmente
+    itens[1].setPromocao(2.99);
+    // ...
+}
+```
+❌ ~65 linhas de código  
+❌ Recompilação necessária  
+❌ Propenso a erros
+
+### DEPOIS (Leitura de CSV)
+```java
+String nomeArquivo = IO.readln("Digite o nome do arquivo: ");
+Cardapio cardapio = new Cardapio(nomeArquivo);
+```
+✅ ~55 linhas (genérico)  
+✅ Sem recompilação  
+✅ Escalabilidade ilimitada
+
+---
+
 ## 📖 Documentação Adicional
 
 - [📈 Evolução do Projeto](docs/evolucao-do-projeto.md) - Histórico detalhado das aulas
@@ -171,7 +257,7 @@ Este item não contém glúten.
 **Instituição:** UNIPDS (Pós-Graduação)  
 **Módulo:** 01 - Introdução ao Java  
 **Total de Aulas:** 19 videoaulas  
-**Aula Atual:** 13 - Imutabilidade, StringBuilder e Final
+**Aula Atual:** 14 - Praticando com Arquivo CSV ✅
 
 ### 📚 Conteúdo do Módulo 1
 
@@ -184,18 +270,18 @@ Este item não contém glúten.
 7. ✅ Arrays de Objetos, Composição e Enums
 8. ✅ IntelliJ IDE e Debug
 9. ✅ Organizando em Arquivos e Herança
-10. ✅ **Pacotes, Modificadores de Acesso, Getters e Setters**
-11. ✅ **Protected**
-12. ✅ **String**
-13. ✅ **Imutabilidade, StringBuilder e Final** ← Você está aqui!
-14. ⏳ Praticando com Arquivo CSV
+10. ✅ Pacotes, Modificadores de Acesso, Getters e Setters
+11. ✅ Protected
+12. ✅ String
+13. ✅ Imutabilidade, StringBuilder e Final
+14. ✅ **Praticando com Arquivo CSV** ← Você está aqui! ⭐
 15. ⏳ Praticando com Arquivo JSON
 16. ⏳ Refatoração e Interfaces
 17. ⏳ Classes Abstratas e Static
 18. ⏳ Object, Classes Wrapper e Javadoc
 19. ⏳ JARs e Exceptions
 
-> **Nota:** Este repositório documenta meu aprendizado a partir da **Aula 10**, onde começou o versionamento do código. O projeto continua evoluindo nas próximas 6 aulas do módulo.
+> **Nota:** Este repositório documenta meu aprendizado a partir da **Aula 10**, onde começou o versionamento do código. O projeto continua evoluindo nas próximas 5 aulas do módulo.
 
 ---
 
@@ -204,7 +290,21 @@ Este item não contém glúten.
 - **Linguagem:** Java 21+
 - **IDE:** IntelliJ IDEA
 - **Paradigma:** Programação Orientada a Objetos (POO)
+- **I/O:** java.nio.file (Path, Files)
+- **Formato de Dados:** CSV (Comma-Separated Values)
 - **Controle de Versão:** Git & GitHub
+
+---
+
+## 📊 Estatísticas do Projeto
+
+| Métrica | Valor |
+|---------|-------|
+| Classes Java | 12+ |
+| Linhas de código | ~600+ |
+| Conceitos POO | 9 aplicados |
+| Aulas concluídas | 14 de 19 |
+| Arquivos de dados | 2 (CSV, JSON) |
 
 ---
 

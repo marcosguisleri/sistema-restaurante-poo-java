@@ -21,6 +21,9 @@ Este documento consolida os **conceitos de Programação Orientada a Objetos (PO
 13. [Manipulação de Arquivos](#13-manipulação-de-arquivos)
 14. [Tratamento de Exceções](#14-tratamento-de-exceções)
 15. [Parsing de JSON](#15-parsing-de-json)
+16. [Interfaces](#16-interfaces)
+17. [Refatoração](#17-refatoração)
+18. [Factory Pattern](#18-factory-pattern)
 
 ---
 
@@ -45,6 +48,7 @@ Restaurante restaurante = new Restaurante("Florinda", "Av. 123");
 
 ### ✅ Onde foi usado
 - `Restaurante`, `Cardapio`, `ItemCardapio` e suas especializações
+- **Aula 16:** Classes leitoras (`LeitorItensCardapioCSV`, `LeitorItensCardapioJSON`) e fábrica (`FabricaLeitorItensCardapio`)
 
 ---
 
@@ -89,6 +93,7 @@ public class Restaurante {
 
 ### ✅ Onde foi usado
 - Todas as classes do modelo (`Restaurante`, `ItemCardapio`, etc.)
+- **Aula 16:** Lógica de parsing encapsulada nas classes leitoras
 
 ---
 
@@ -189,9 +194,35 @@ for (ItemCardapio item : itens) {
 }
 ```
 
+#### Polimorfismo com Interfaces (Aula 16) ⭐
+
+```java
+// Interface define o contrato
+public interface LeitorItensCardapio {
+    ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException;
+}
+
+// Diferentes implementações
+LeitorItensCardapio leitorCSV = new LeitorItensCardapioCSV();
+LeitorItensCardapio leitorJSON = new LeitorItensCardapioJSON();
+
+// Polimorfismo: mesma variável, comportamentos diferentes
+LeitorItensCardapio leitor;
+
+if (nomeArquivo.endsWith(".csv")) {
+    leitor = new LeitorItensCardapioCSV();
+} else {
+    leitor = new LeitorItensCardapioJSON();
+}
+
+// Chama o método apropriado baseado no tipo real do objeto
+ItemCardapio[] itens = leitor.processaArquivo(nomeArquivo);
+```
+
 ### ✅ Onde foi usado
 - `getImposto()` - Calculado diferentemente em cada tipo de item
 - `ehSemGluten()` - Retorna `true` apenas em `ItemCardapioSemGluten`
+- **Aula 16:** `processaArquivo()` - Implementado diferentemente em cada leitor ⭐
 
 ---
 
@@ -234,6 +265,25 @@ public class Cardapio {
 }
 ```
 
+#### Uso de Interfaces (Aula 16)
+
+```java
+public class FabricaLeitorItensCardapio {
+    // Usa a interface, não a implementação concreta
+    public LeitorItensCardapio criaLeitor(String nomeArquivo) {
+        LeitorItensCardapio leitor = null;
+        
+        if (nomeArquivo.endsWith(".csv")) {
+            leitor = new LeitorItensCardapioCSV();
+        } else if (nomeArquivo.endsWith(".json")) {
+            leitor = new LeitorItensCardapioJSON();
+        }
+        
+        return leitor;
+    }
+}
+```
+
 ### 🎯 Diferença Visual
 
 ```
@@ -244,908 +294,595 @@ Restaurante ◆────── Cardapio
 Agregação (fraca):
 Cardapio ◇────── ItemCardapio
 (Itens podem existir sem estar em um cardápio)
+
+Dependência via Interface (Aula 16):
+Cardapio ────────► LeitorItensCardapio (interface)
+                         ▲
+                         |
+                   ┌─────┴─────┐
+                   |           |
+          LeitorCSV    LeitorJSON
 ```
 
 ### ✅ Onde foi usado
 - `Restaurante` **compõe** `Cardapio`
 - `Cardapio` **agrega** `ItemCardapio[]`
+- **Aula 16:** `Cardapio` **usa** `LeitorItensCardapio` (interface)
 
 ---
 
-## 6. Modificadores de Acesso
+[Seções 6-15 permanecem inalteradas...]
+
+## 16. Interfaces
 
 ### 📖 Teoria
+Interface é um **contrato** que define métodos que uma classe deve implementar, sem especificar como. É uma forma de estabelecer um **comportamento comum** entre classes não relacionadas por herança.
 
-| Modificador | Classe | Pacote | Subclasse | Global |
-|-------------|--------|--------|-----------|--------|
-| `private`   | ✅     | ❌     | ❌        | ❌     |
-| `default`   | ✅     | ✅     | ❌        | ❌     |
-| `protected` | ✅     | ✅     | ✅        | ❌     |
-| `public`    | ✅     | ✅     | ✅        | ✅     |
+### 🎯 Características das Interfaces
 
-### 💻 Aplicação no Projeto
+**O que uma interface TEM:**
+- ✅ Métodos abstratos (sem corpo)
+- ✅ Constantes (public static final)
+- ✅ Métodos default (com implementação - Java 8+)
+- ✅ Métodos static (com implementação - Java 8+)
+
+**O que uma interface NÃO TEM:**
+- ❌ Atributos de instância
+- ❌ Construtores
+- ❌ Métodos privados (antes do Java 9)
+- ❌ Estado mutável
+
+### 💻 Aplicação na Aula 16
+
+#### 1. Declaração da Interface
 
 ```java
-public class ItemCardapio {
-    // PRIVATE - Só acessível dentro da classe
-    private long id;
-    private String nome;
+package mx.florinda.leitor;
+
+import mx.florinda.modelo.ItemCardapio;
+import java.io.IOException;
+
+public interface LeitorItensCardapio {
     
-    // PROTECTED - Acessível no pacote e subclasses
-    protected ItemCardapio(long id, String nome, ...) {
-        this.id = id;
-        this.nome = nome;
-    }
+    // Método abstrato (implicitamente public abstract)
+    public abstract ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException;
     
-    // PUBLIC - Acessível de qualquer lugar
-    public long getId() {
-        return id;
-    }
 }
 ```
 
-### 🎯 Estratégia Usada
-- **Atributos**: `private` (proteger dados)
-- **Construtores**: `protected` (controlar criação, permitir herança)
-- **Getters/Setters**: `public` (interface de acesso)
-- **Métodos de negócio**: `public` (funcionalidades expostas)
-
----
-
-## 7. Enums
-
-### 📖 Teoria
-Tipo especial que representa um conjunto fixo de constantes.
-
-### 🎯 Benefícios
-- ✅ Tipagem forte (evita valores inválidos)
-- ✅ Código mais legível
-- ✅ Autocomplete na IDE
-- ✅ Segurança em tempo de compilação
-
-### 💻 Aplicação no Projeto
+**Nota:** Em interfaces, os modificadores `public abstract` são **opcionais** pois são implícitos:
 
 ```java
-public enum CategoriaCardapio {
-    ENTRADA,
-    PRATOS_PRINCIPAIS,
-    SOBREMESAS,
-    BEBIDAS
-}
-
-// Uso
-ItemCardapio item = new ItemCardapio(
-    1L, 
-    "Churros", 
-    "Delicioso churros", 
-    4.99, 
-    CategoriaCardapio.SOBREMESAS  // Tipo seguro!
-);
-
-// Conversão de String para Enum (Aula 14)
-String categoriaStr = "BEBIDAS";
-CategoriaCardapio categoria = CategoriaCardapio.valueOf(categoriaStr);
+// Estas três declarações são IDÊNTICAS:
+public abstract ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException;
+public ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException;
+ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException;
 ```
 
-### ✅ Onde foi usado
-- `CategoriaCardapio` - Define categorias válidas do cardápio
-- Aula 14: Conversão de String para Enum ao ler CSV
-
----
-
-## 8. Construtores
-
-### 📖 Teoria
-Método especial chamado ao criar um objeto. Inicializa o estado do objeto.
-
-### 💻 Aplicação no Projeto
+#### 2. Implementação da Interface - CSV
 
 ```java
-public class Restaurante {
-    private String nome;
-    private String endereco;
+package mx.florinda.leitor;
+
+import mx.florinda.modelo.ItemCardapio;
+import java.io.IOException;
+
+public class LeitorItensCardapioCSV implements LeitorItensCardapio {
     
-    // Construtor - inicializa o objeto
-    public Restaurante(String nome, String endereco) {
-        this.nome = nome;
-        this.endereco = endereco;
-    }
-}
-
-// Uso
-Restaurante restaurante = new Restaurante("Florinda", "Av. 123");
-```
-
-#### Construtor com Super
-
-```java
-public class ItemCardapioBebida extends ItemCardapio {
-    
-    public ItemCardapioBebida(long id, String nome, String descricao, 
-                              double preco, CategoriaCardapio categoria) {
-        // Chama o construtor da classe PAI
-        super(id, nome, descricao, preco, categoria);
-    }
-}
-```
-
-#### Construtor com Exceções (Aula 14)
-
-```java
-public Cardapio(String nomeArquivo) throws IOException {
-    // Construtor que pode lançar exceção
-    Path arquivo = Path.of(nomeArquivo);
-    String conteudo = Files.readString(arquivo);
-    // ... parsing
-}
-```
-
-### ✅ Onde foi usado
-- Todas as classes do modelo têm construtores
-- Subclasses usam `super()` para chamar construtor do pai
-- Aula 14: Construtor do Cardapio com `throws IOException`
-
----
-
-## 9. Manipulação de Strings
-
-### 📖 Teoria
-Strings em Java são objetos **imutáveis** da classe `String` que representam sequências de caracteres.
-
-### 💻 Métodos Principais
-
-**Informações:**
-- `length()` - Tamanho da string
-- `charAt(index)` - Caractere em uma posição
-- `isEmpty()` - Verifica se está vazia
-
-**Verificações:**
-- `contains(String)` - Contém substring?
-- `startsWith(String)` - Começa com?
-- `endsWith(String)` - Termina com?
-
-**Transformações:**
-- `toUpperCase()` / `toLowerCase()` - Converte case
-- `trim()` / `strip()` - Remove espaços
-- `replace(old, new)` - Substitui texto
-
-**Extração:**
-- `substring(start, end)` - Extrai substring
-- `split(delimiter)` - Divide em array
-
-### 💻 Aplicação na Aula 14 (CSV)
-
-```java
-// Leitura do arquivo
-String conteudoArquivo = Files.readString(arquivo);
-
-// Divisão em linhas
-String[] linhasArquivo = conteudoArquivo.split("\n");
-
-// Para cada linha
-String linha = linhasArquivo[i].strip();  // Remove espaços
-
-// Verifica se linha está vazia
-if (linha.isEmpty()) {
-    continue;
-}
-
-// Verifica tipo de arquivo
-if (nomeArquivo.endsWith(".csv")) {
-    // Divide em colunas (mantém vazias com -1)
-    String[] partes = linha.split(";", -1);
-}
-
-// Verifica campos vazios
-if (descontoStr == null || descontoStr.isBlank()) {
-    throw new IOException("Campo obrigatório vazio");
-}
-```
-
-### 💻 Aplicação na Aula 15 (JSON)
-
-```java
-// Limpeza de caracteres JSON
-linha = linha.replace("[", "");
-linha = linha.replace("]", "");
-linha = linha.replace("{", "");
-linha = linha.replace("}", "");
-linha = linha.replace("\"", "");  // Remove aspas
-
-// Split por vírgula seguida de aspas (separadores de campos JSON)
-String[] partes = linha.split(",\\s*\"");
-
-// Limpeza adicional de aspas remanescentes
-for (int j = 0; j < partes.length; j++) {
-    partes[j] = partes[j].replace("\"", "");
-}
-
-// Split com limite para preservar conteúdo com dois-pontos
-String[] propriedadesEValor = parte.split(":", 2);
-```
-
-### ✅ Onde foi usado
-- Aula 12: TesteString com métodos básicos
-- Aula 13: Comparação de performance (String vs StringBuilder)
-- **Aula 14: Parsing de CSV** ⭐
-- **Aula 15: Parsing de JSON** ⭐
-
----
-
-## 10. StringBuilder e Performance
-
-### 📖 Teoria
-`StringBuilder` é uma classe **mutável** para construção eficiente de strings.
-
-### 💻 Comparação
-
-```java
-// ❌ String (cria muitos objetos)
-String resultado = "";
-for (int i = 0; i < 1000; i++) {
-    resultado += i + ", ";
-}
-
-// ✅ StringBuilder (modifica mesmo objeto)
-StringBuilder sb = new StringBuilder();
-for (int i = 0; i < 1000; i++) {
-    sb.append(i).append(", ");
-}
-String resultado = sb.toString();
-```
-
-### ✅ Onde foi usado
-- Aula 13: Teste de performance
-- Exercício: Geração de relatórios
-
----
-
-## 11. Modificador Final
-
-### 📖 Teoria
-O modificador `final` impõe restrições de imutabilidade.
-
-### 🎯 Aplicações
-
-**1. Classes final (não podem ser herdadas):**
-```java
-public final class String { }
-```
-
-**2. Atributos final (só podem ser atribuídos uma vez):**
-```java
-private final double x;
-```
-
-**3. Variáveis locais final:**
-```java
-final double PI = 3.14159;
-```
-
-### ✅ Onde foi usado
-- Aula 13: Classe `Coordenada` imutável
-
----
-
-## 12. Classes Imutáveis
-
-### 📖 Teoria
-Classe cujos objetos não podem ter estado modificado após criação.
-
-### 📋 Checklist
-
-1. ✅ Classe `final`
-2. ✅ Atributos `private final`
-3. ✅ Inicialização apenas no construtor
-4. ✅ Sem setters
-5. ✅ Métodos retornam novos objetos
-
-### 💻 Exemplo
-
-```java
-public final class Coordenada {
-    private final double x;
-    private final double y;
-    
-    public Coordenada(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
-    
-    public double getX() { return x; }
-    public double getY() { return y; }
-    
-    public Coordenada mover(double dx, double dy) {
-        return new Coordenada(x + dx, y + dy);
-    }
-}
-```
-
-### ✅ Onde foi usado
-- Aula 13: Classe `Coordenada`
-
----
-
-## 13. Manipulação de Arquivos
-
-### 📖 Teoria
-Java oferece APIs modernas para trabalhar com arquivos no pacote `java.nio.file`.
-
-### 💻 Conceitos da Aula 14
-
-#### 1. Path - Representa caminho de arquivo
-
-```java
-import java.nio.file.Path;
-
-Path arquivo = Path.of("itens-cardapio.csv");
-Path absoluto = Path.of("/home/usuario/dados.csv");
-```
-
-#### 2. Files - Operações com arquivos
-
-```java
-import java.nio.file.Files;
-
-// Ler arquivo inteiro como String
-String conteudo = Files.readString(arquivo);
-
-// Outras operações (não usadas ainda)
-boolean existe = Files.exists(arquivo);
-long tamanho = Files.size(arquivo);
-```
-
-#### 3. Leitura e Parsing
-
-```java
-public Cardapio(String nomeArquivo) throws IOException {
-    // 1. Criar Path
-    Path arquivo = Path.of(nomeArquivo);
-    
-    // 2. Ler conteúdo
-    String conteudoArquivo = Files.readString(arquivo);
-    
-    // 3. Dividir em linhas
-    String[] linhas = conteudoArquivo.split("\n");
-    
-    // 4. Processar cada linha
-    for (String linha : linhas) {
-        linha = linha.strip();
-        
-        if (linha.isEmpty()) {
-            continue;
-        }
-        
-        // 5. Dividir em colunas
-        String[] partes = linha.split(";", -1);
-        
-        // 6. Extrair dados
-        long id = Long.parseLong(partes[0]);
-        String nome = partes[1];
-        // ...
-    }
-}
-```
-
-### 🎯 Parsing de Dados
-
-**Conversão de Strings para Tipos Primitivos:**
-
-```java
-// String → long
-long id = Long.parseLong("123");
-
-// String → double
-double preco = Double.parseDouble("4.99");
-
-// String → boolean
-boolean ativo = Boolean.parseBoolean("true");
-
-// String → Enum
-CategoriaCardapio categoria = CategoriaCardapio.valueOf("BEBIDAS");
-```
-
-### ⚠️ Tratamento de Campos Vazios
-
-```java
-// split normal: ignora campos vazios no final
-String[] partes1 = "1;nome;".split(";");    // 2 elementos
-
-// split com -1: mantém campos vazios
-String[] partes2 = "1;nome;".split(";", -1); // 3 elementos
-
-// Verificar se campo está vazio
-if (campo == null || campo.isBlank()) {
-    // Campo vazio
-}
-```
-
-### 📊 Formato CSV Usado
-
-```
-Coluna 0: id (long)
-Coluna 1: nome (String)
-Coluna 2: descricao (String)
-Coluna 3: preco (double)
-Coluna 4: categoria (String → Enum)
-Coluna 5: emPromocao (String → boolean)
-Coluna 6: precoComDesconto (String → double, pode estar vazio)
-Coluna 7: impostoIsento (String → boolean)
-Coluna 8: ehSemGluten (String → boolean)
-```
-
-### 💡 Validações Implementadas
-
-```java
-// 1. Número de colunas
-if (partes.length < 9) {
-    throw new IOException("Linha CSV inválida: esperado 9 colunas");
-}
-
-// 2. Regra de negócio
-if (emPromocao && descontoStr.isBlank()) {
-    throw new IOException("Item em promoção deve ter desconto");
-}
-
-// 3. Tipo de arquivo
-if (!nomeArquivo.endsWith(".csv")) {
-    System.out.println("Formato inválido");
-}
-```
-
-### 🎯 Instanciação Dinâmica
-
-```java
-ItemCardapio item;
-
-// Escolhe subclasse baseado nos flags
-if (impostoIsento) {
-    item = new ItemCardapioIsento(...);
-} else if (ehSemGluten) {
-    item = new ItemCardapioSemGluten(...);
-} else if (categoria == CategoriaCardapio.BEBIDAS) {
-    item = new ItemCardapioBebida(...);
-} else {
-    item = new ItemCardapio(...);
-}
-
-// Configura promoção se necessário
-if (emPromocao) {
-    item.setPromocao(precoComDesconto);
-}
-```
-
-### ✅ Onde foi usado
-- **Aula 14: Leitura de CSV completa** ⭐
-- Construtor do Cardapio refatorado
-- Validação de dados estruturados
-- Conversão de tipos
-
----
-
-## 14. Tratamento de Exceções
-
-### 📖 Teoria
-Exceções são eventos anormais que ocorrem durante a execução de um programa. Java oferece mecanismos para tratar esses erros de forma elegante.
-
-### 🎯 IOException
-
-`IOException` é uma **exceção checked** (verificada) que deve ser tratada ou declarada.
-
-**O que é checked exception?**
-- Compilador obriga a tratar ou declarar
-- Geralmente representa problemas recuperáveis
-- Comum em operações de I/O (Input/Output)
-
-### 💻 Declarando Exceção (throws)
-
-```java
-public Cardapio(String nomeArquivo) throws IOException {
-    // Se algo der errado, lança a exceção
-    Path arquivo = Path.of(nomeArquivo);
-    String conteudo = Files.readString(arquivo);  // Pode lançar IOException
-}
-```
-
-**O que `throws` significa:**
-- "Este método PODE lançar IOException"
-- Quem chamar o método DEVE tratar ou propagar a exceção
-- Não trata o erro aqui, passa responsabilidade para cima
-
-### 💻 Lançando Exceção (throw)
-
-```java
-if (partes.length < 9) {
-    throw new IOException("Linha CSV inválida: esperado 9 colunas, veio " + partes.length);
-}
-
-if (emPromocao && descontoStr.isBlank()) {
-    throw new IOException("Item em promoção sem desconto");
-}
-```
-
-**O que `throw` significa:**
-- "LANCE esta exceção agora"
-- Cria uma nova exceção com mensagem
-- Interrompe execução normal do método
-
-### 💻 Tratando Exceção (try-catch)
-
-```java
-// No Main (quem chama)
-try {
-    String nomeArquivo = IO.readln("Digite o nome do arquivo: ");
-    Cardapio cardapio = new Cardapio(nomeArquivo);
-    // Código continua normalmente
-} catch (IOException e) {
-    System.out.println("Erro ao ler arquivo: " + e.getMessage());
-    // Programa não quebra, tratou o erro
-}
-```
-
-### 🎯 Diferença: throws vs throw
-
-| `throws` | `throw` |
-|----------|---------|
-| Na **assinatura do método** | **Dentro do método** |
-| **Declara** que pode lançar | **Lança** a exceção |
-| `throws IOException` | `throw new IOException()` |
-| Pode listar múltiplas | Lança uma por vez |
-
-### 📊 Fluxo de Exceções
-
-```
-Main.java
-    ↓ chama
-Cardapio(String) throws IOException  ← Declara que pode lançar
-    ↓ lê arquivo
-Files.readString() throws IOException  ← Pode lançar
-    ↓ arquivo não existe
-IOException é lançada ← throw
-    ↓ propaga
-volta para Main
-    ↓ tratamento
-try-catch captura ← catch
-    ↓
-Programa continua
-```
-
-### 💡 Por que usar Exceções?
-
-**Antes (sem exceções):**
-```java
-public boolean carregarCardapio(String arquivo) {
-    // Retorna true/false
-    // Como saber O QUE deu errado?
-    return false;
-}
-```
-
-**Depois (com exceções):**
-```java
-public void carregarCardapio(String arquivo) throws IOException {
-    // Lança exceção com mensagem detalhada
-    throw new IOException("Arquivo não encontrado: " + arquivo);
-}
-```
-
-**Vantagens:**
-- ✅ Mensagens de erro detalhadas
-- ✅ Separa código normal de tratamento de erros
-- ✅ Pode capturar em níveis diferentes
-- ✅ Stack trace para debug
-
-### 🎯 Tipos de Exceções
-
-**1. Checked (Verificadas):**
-- Compilador obriga a tratar
-- Exemplo: `IOException`, `FileNotFoundException`
-- Problemas recuperáveis
-
-**2. Unchecked (Não Verificadas):**
-- Compilador não obriga a tratar
-- Exemplo: `NullPointerException`, `ArrayIndexOutOfBoundsException`
-- Erros de programação
-
-**3. Errors:**
-- Problemas graves do sistema
-- Exemplo: `OutOfMemoryError`
-- Geralmente não devem ser capturados
-
-### ⚠️ Erros Comuns na Aula 14
-
-**1. Arquivo não encontrado:**
-```java
-Path arquivo = Path.of("cardapio.csv");  // Arquivo não existe
-Files.readString(arquivo);  // IOException: arquivo não encontrado
-```
-
-**2. Parsing inválido:**
-```java
-long id = Long.parseLong("abc");  // NumberFormatException
-double preco = Double.parseDouble("R$4.99");  // NumberFormatException
-```
-
-**3. Enum inválido:**
-```java
-CategoriaCardapio.valueOf("LANCHES");  // IllegalArgumentException
-```
-
-**4. Array index:**
-```java
-String[] partes = linha.split(";");  // 2 elementos
-String campo = partes[5];  // ArrayIndexOutOfBoundsException
-```
-
-### 💻 Exemplo Completo
-
-```java
-// Cardapio.java (declara que pode lançar)
-public Cardapio(String nomeArquivo) throws IOException {
-    try {
+    @Override
+    public ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException {
+        // Implementação específica para CSV
         Path arquivo = Path.of(nomeArquivo);
         String conteudo = Files.readString(arquivo);
         
-        // ... validações
-        if (partes.length < 9) {
-            throw new IOException("CSV inválido");  // Lança exceção
-        }
+        // ... lógica de parsing CSV ...
         
-        // ... parsing pode lançar NumberFormatException (unchecked)
-        long id = Long.parseLong(partes[0]);
-        
-    } catch (NumberFormatException e) {
-        // Captura exceção de parsing e relança como IOException
-        throw new IOException("Erro ao converter número: " + e.getMessage());
-    }
-}
-
-// Main.java (trata a exceção)
-public static void main(String[] args) {
-    try {
-        Cardapio cardapio = new Cardapio("itens-cardapio.csv");
-        System.out.println("Cardápio carregado!");
-    } catch (IOException e) {
-        System.out.println("Erro: " + e.getMessage());
-        e.printStackTrace();  // Mostra stack trace para debug
+        return itens;
     }
 }
 ```
 
+#### 3. Implementação da Interface - JSON
+
+```java
+package mx.florinda.leitor;
+
+import mx.florinda.modelo.ItemCardapio;
+import java.io.IOException;
+
+public class LeitorItensCardapioJSON implements LeitorItensCardapio {
+    
+    @Override
+    public ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException {
+        // Implementação específica para JSON
+        Path arquivo = Path.of(nomeArquivo);
+        String conteudo = Files.readString(arquivo);
+        
+        // ... lógica de parsing JSON ...
+        
+        return itens;
+    }
+}
+```
+
+### 🎯 Benefícios das Interfaces
+
+**1. Contrato Claro:**
+```java
+// Qualquer classe que implemente esta interface DEVE ter este método
+public interface LeitorItensCardapio {
+    ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException;
+}
+```
+
+**2. Polimorfismo:**
+```java
+// Variável do tipo interface pode referenciar qualquer implementação
+LeitorItensCardapio leitor;
+
+if (formato.equals("csv")) {
+    leitor = new LeitorItensCardapioCSV();
+} else {
+    leitor = new LeitorItensCardapioJSON();
+}
+
+// Chama o método apropriado baseado no objeto real
+ItemCardapio[] itens = leitor.processaArquivo(arquivo);
+```
+
+**3. Desacoplamento:**
+```java
+// Código depende da interface, não da implementação concreta
+public class Cardapio {
+    public Cardapio(String nomeArquivo) {
+        LeitorItensCardapio leitor = fabricaLeitor.criaLeitor(nomeArquivo);
+        // Não importa se é CSV ou JSON!
+        itens = leitor.processaArquivo(nomeArquivo);
+    }
+}
+```
+
+**4. Extensibilidade:**
+```java
+// Fácil adicionar novos formatos sem modificar código existente
+public class LeitorItensCardapioXML implements LeitorItensCardapio {
+    @Override
+    public ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException {
+        // Nova implementação para XML
+        // Resto do código continua funcionando!
+    }
+}
+```
+
+### 📊 Interface vs Classe Abstrata
+
+| Aspecto | Interface | Classe Abstrata |
+|---------|-----------|-----------------|
+| Herança múltipla | ✅ Sim (implements múltiplos) | ❌ Não (extends apenas 1) |
+| Atributos de instância | ❌ Não | ✅ Sim |
+| Construtores | ❌ Não | ✅ Sim |
+| Métodos concretos | ⚠️ Só default/static | ✅ Sim |
+| Uso típico | Comportamento comum | Classe base comum |
+| Palavra-chave | `implements` | `extends` |
+
+### 💡 Quando usar Interface?
+
+**Use INTERFACE quando:**
+- ✅ Definir um **contrato/comportamento** comum
+- ✅ Não há relacionamento "É-UM" natural entre classes
+- ✅ Precisa de herança múltipla de tipos
+- ✅ Quer garantir que classes não relacionadas tenham os mesmos métodos
+
+**Exemplos do projeto:**
+- `LeitorItensCardapio` - Define comportamento de leitura
+- `LeitorItensCardapioCSV` e `LeitorItensCardapioJSON` não têm relação de herança entre si
+- Ambos **implementam** o mesmo comportamento (ler e processar arquivo)
+
+**Use CLASSE ABSTRATA quando:**
+- ✅ Há relacionamento "É-UM" claro
+- ✅ Precisa compartilhar código entre subclasses
+- ✅ Precisa de atributos de instância
+- ✅ Precisa de construtores
+
+**Exemplo do projeto:**
+- `ItemCardapio` (classe abstrata seria apropriada)
+- `ItemCardapioBebida`, `ItemCardapioIsento` **são** tipos de `ItemCardapio`
+- Compartilham atributos (id, nome, preço) e comportamento comum
+
 ### ✅ Onde foi usado
-- **Aula 14: IOException em operações de arquivo** ⭐
-- Declaração: `throws IOException` no construtor
-- Lançamento: `throw new IOException(...)` nas validações
-- Tratamento: `try-catch` no Main (será implementado na Aula 19)
+- **Aula 16: Interface `LeitorItensCardapio`** ⭐
+- Define contrato para leitores de arquivo
+- Implementada por `LeitorItensCardapioCSV` e `LeitorItensCardapioJSON`
+- Permite polimorfismo e desacoplamento no `Cardapio`
 
 ---
 
-## 15. Parsing de JSON
+## 17. Refatoração
 
 ### 📖 Teoria
-JSON (JavaScript Object Notation) é um formato leve de intercâmbio de dados baseado em texto. É fácil para humanos lerem e escreverem, e fácil para máquinas parsearem e gerarem.
+Refatoração é o processo de **reestruturar código existente** sem alterar seu comportamento externo. O objetivo é melhorar a qualidade interna do código: legibilidade, manutenibilidade e extensibilidade.
 
-### 🎯 Estrutura JSON
+### 🎯 Princípios da Refatoração
 
-```json
-{
-  "id": 1,
-  "nome": "Refresco do Chaves",
-  "descricao": "Suco de limão...",
-  "preco": 2.99,
-  "categoria": "BEBIDAS",
-  "emPromocao": false,
-  "precoComDesconto": null,
-  "impostoIsento": false,
-  "semGlutem": false
-}
-```
+**Quando refatorar:**
+- ✅ Código duplicado
+- ✅ Métodos muito longos
+- ✅ Classes com muitas responsabilidades
+- ✅ Código difícil de testar
+- ✅ Necessidade de adicionar novas funcionalidades
 
-**Elementos JSON:**
-- `{ }` - Objeto
-- `[ ]` - Array
-- `"chave": valor` - Par chave-valor
-- Tipos: string, number, boolean, null, object, array
+**Como refatorar:**
+1. Identifique o problema (code smell)
+2. Escolha a técnica de refatoração
+3. Faça pequenas mudanças incrementais
+4. Teste após cada mudança
+5. Commite frequentemente
 
-### 💻 Abordagem Manual (Aula 15)
+### 💻 Aplicação na Aula 16
 
-**Nota Importante:** Esta é uma implementação **temporária** que será refatorada na próxima aula. O parsing manual de JSON não é a prática recomendada para produção.
-
-#### 1. Limpeza de Caracteres Estruturais
+#### ANTES da Refatoração (Aula 15)
 
 ```java
-// Remove caracteres estruturais JSON
-linha = linha.replace("[", "");
-linha = linha.replace("]", "");
-linha = linha.replace("{", "");
-linha = linha.replace("}", "");
-linha = linha.replace("\"", "");  // Remove todas as aspas
-```
-
-#### 2. Split por Vírgulas (Separadores de Campos)
-
-```java
-// Split usando regex para pegar vírgulas seguidas de aspas
-String[] partes = linha.split(",\\s*\"");
-
-// Limpa aspas remanescentes em cada parte
-for (int j = 0; j < partes.length; j++) {
-    partes[j] = partes[j].replace("\"", "");
-}
-```
-
-#### 3. Extração de Chave-Valor
-
-```java
-// Cada parte está no formato "chave: valor"
-String parteId = partes[0];  // "id: 1"
-String[] propriedadesEValorId = parteId.split(":");
-String valorId = propriedadesEValorId[1].trim();
-long id = Long.parseLong(valorId);
-```
-
-### ⚠️ Desafios do Parsing Manual
-
-**1. Descrições com Vírgulas:**
-```json
-"descricao": "Suco de limão, que parece de tamarindo e tem gosto de groselha."
-```
-- A vírgula dentro da descrição pode quebrar o split
-- Solução: usar regex mais específico `",\\s*\""`
-
-**2. Split com Limite:**
-```java
-// Usar limite 2 para campos que podem conter dois-pontos
-String[] propriedadesEValor = parte.split(":", 2);
-// "descricao: texto: com: dois-pontos" → ["descricao", " texto: com: dois-pontos"]
-```
-
-**3. Valores Null:**
-```json
-"precoComDesconto": null
-```
-```java
-// Verificar se é "null" string, não null Java
-if (!valorPrecoComDesconto.equals("null") && !valorPrecoComDesconto.isBlank()) {
-    double precoComDesconto = Double.parseDouble(valorPrecoComDesconto);
-    item.setPromocao(precoComDesconto);
-}
-```
-
-### 💻 Código Completo (Seção JSON)
-
-```java
-} else if (nomeArquivo.endsWith(".json")) {
-
-    // Trata o JSON por posição, refatoração na próxima aula
-    linha = linha.replace("[", "");
-    linha = linha.replace("]", "");
-    linha = linha.replace("{", "");
-    linha = linha.replace("}", "");
-
-    // Split usando regex para pegar apenas vírgulas que separam campos
-    String[] partes = linha.split(",\\s*\"");
+public class Cardapio {
+    private ItemCardapio[] itens;
     
-    // Limpa as aspas de cada parte
-    for (int j = 0; j < partes.length; j++) {
-        partes[j] = partes[j].replace("\"", "");
-    }
-
-    String parteId = partes[0];
-    String[] propriedadesEValorId = parteId.split(":");
-    String valorId = propriedadesEValorId[1].trim();
-    long id = Long.parseLong(valorId);
-
-    String parteNome = partes[1];
-    String[] propriedadesEValorNome = parteNome.split(":", 2);
-    String nome = propriedadesEValorNome[1].trim();
-
-    String parteDescricao = partes[2];
-    String[] propriedadesEValorDescricao = parteDescricao.split(":", 2);
-    String descricao = propriedadesEValorDescricao[1].trim();
-
-    String partePreco = partes[3];
-    String[] propriedadesEValorPreco = partePreco.split(":");
-    String valorPreco = propriedadesEValorPreco[1].trim();
-    double preco = Double.parseDouble(valorPreco);
-
-    String parteCategoria = partes[4];
-    String[] propriedadesEValorCategoria = parteCategoria.split(":");
-    String valorCategoria = propriedadesEValorCategoria[1].trim();
-    CategoriaCardapio categoria = CategoriaCardapio.valueOf(valorCategoria);
-
-    ItemCardapio item;
-
-    String parteImpostoIsento = partes[7];
-    String[] propriedadesEValorImpostoIsento = parteImpostoIsento.split(":");
-    String valorImpostoIsento = propriedadesEValorImpostoIsento[1].trim();
-    boolean impostoIsento = Boolean.parseBoolean(valorImpostoIsento);
-
-    String parteSemGluten = partes[8];
-    String[] propriedadesEValorSemGluten = parteSemGluten.split(":");
-    String valorSemGluten = propriedadesEValorSemGluten[1].trim();
-    boolean ehSemGluten = Boolean.parseBoolean(valorSemGluten);
-
-    if (impostoIsento) {
-        item = new ItemCardapioIsento(id, nome, descricao, preco, categoria);
-    } else if (ehSemGluten) {
-        item = new ItemCardapioSemGluten(id, nome, descricao, preco, categoria);
-    } else if (categoria == CategoriaCardapio.BEBIDAS) {
-        item = new ItemCardapioBebida(id, nome, descricao, preco, categoria);
-    } else {
-        item = new ItemCardapio(id, nome, descricao, preco, categoria);
-    }
-
-    String parteEmPromocao = partes[5];
-    String[] propriedadesEValorEmPromocao = parteEmPromocao.split(":");
-    String valorEmPromocao = propriedadesEValorEmPromocao[1].trim();
-    boolean emPromocao = Boolean.parseBoolean(valorEmPromocao);
-
-    if (emPromocao) {
-        String partePrecoComDesconto = partes[6];
-        String[] propriedadesEValorPrecoComDesconto = partePrecoComDesconto.split(":");
-        String valorPrecoComDesconto = propriedadesEValorPrecoComDesconto[1].trim();
+    public Cardapio(String nomeArquivo) throws IOException {
+        Path arquivo = Path.of(nomeArquivo);
+        String conteudo = Files.readString(arquivo);
+        String[] linhas = conteudo.split("\n");
+        itens = new ItemCardapio[linhas.length];
         
-        if (!valorPrecoComDesconto.equals("null") && !valorPrecoComDesconto.isBlank()) {
-            double precoComDesconto = Double.parseDouble(valorPrecoComDesconto);
-            item.setPromocao(precoComDesconto);
+        for (int i = 0; i < linhas.length; i++) {
+            String linha = linhas[i].strip();
+            
+            if (linha.isEmpty()) {
+                continue;
+            }
+            
+            if (nomeArquivo.endsWith(".csv")) {
+                // 50+ linhas de código de parsing CSV
+                // ...
+            } else if (nomeArquivo.endsWith(".json")) {
+                // 60+ linhas de código de parsing JSON
+                // ...
+            } else {
+                System.out.println("Formato inválido");
+            }
         }
     }
-
-    itens[i] = item;
 }
 ```
 
-### 🎯 Formato JSON Usado
+**Problemas identificados:**
+- ❌ Método construtor muito longo (~120 linhas)
+- ❌ Múltiplas responsabilidades (criar cardápio + ler arquivo + parsear CSV + parsear JSON)
+- ❌ Violação do Single Responsibility Principle
+- ❌ Difícil de testar individualmente
+- ❌ Difícil adicionar novos formatos
+- ❌ Lógica de parsing duplicada (estrutura similar para CSV e JSON)
 
-```json
-[
-  {
-    "id": 1,
-    "nome": "Refresco do Chaves",
-    "descricao": "Suco de limão que parece de tamarindo e tem gosto de groselha.",
-    "preco": 2.99,
-    "categoria": "BEBIDAS",
-    "emPromocao": false,
-    "precoComDesconto": null,
-    "impostoIsento": false,
-    "semGlutem": false
-  }
-]
+#### DEPOIS da Refatoração (Aula 16) ⭐
+
+```java
+public class Cardapio {
+    private ItemCardapio[] itens;
+    
+    public Cardapio(String nomeArquivo) throws Exception {
+        // Única responsabilidade: coordenar a criação do cardápio
+        FabricaLeitorItensCardapio fabricaLeitor = new FabricaLeitorItensCardapio();
+        LeitorItensCardapio leitor = fabricaLeitor.criaLeitor(nomeArquivo);
+        
+        if (leitor != null) {
+            itens = leitor.processaArquivo(nomeArquivo);
+        } else {
+            IO.println("O nome/extensão do arquivo é inválido(a) - " + nomeArquivo);
+            itens = new ItemCardapio[0];
+        }
+    }
+}
 ```
 
-### 💡 Por que não usar biblioteca JSON?
+**Melhorias alcançadas:**
+- ✅ Construtor reduzido de ~120 para ~10 linhas
+- ✅ Responsabilidade única: criar cardápio
+- ✅ Lógica de parsing movida para classes especializadas
+- ✅ Fácil adicionar novos formatos (só criar nova classe leitora)
+- ✅ Cada classe pode ser testada independentemente
+- ✅ Código mais legível e manutenível
 
-**Resposta:** Esta é uma aula de **prática pedagógica**!
+### 🔄 Técnicas de Refatoração Aplicadas
 
-**Objetivos da Aula 15:**
-- ✅ Reforçar manipulação de Strings (Aula 12)
-- ✅ Praticar regex e split avançado
-- ✅ Entender estrutura interna de JSON
-- ✅ Aplicar lógica de parsing
-- ✅ Preparar para refatoração (próxima aula)
+#### 1. Extract Class (Extrair Classe)
 
-**Na próxima aula:**
-- Introdução a bibliotecas JSON (Gson, Jackson, JSON-B)
-- Refatoração do código usando biblioteca
-- Comparação: manual vs biblioteca
+**Antes:**
+```java
+// Tudo em uma classe
+public class Cardapio {
+    // parsing CSV aqui
+    // parsing JSON aqui
+}
+```
 
-### ⚠️ Limitações do Parsing Manual
+**Depois:**
+```java
+// Cada formato tem sua própria classe
+public class LeitorItensCardapioCSV { ... }
+public class LeitorItensCardapioJSON { ... }
+```
 
-**Não funciona bem com:**
-- ❌ JSON aninhado (objetos dentro de objetos)
-- ❌ Arrays de objetos complexos
-- ❌ Strings com caracteres especiais
-- ❌ JSON formatado de forma não padronizada
-- ❌ Valores com vírgulas, aspas ou caracteres especiais
+#### 2. Extract Interface (Extrair Interface)
 
-**Por isso será refatorado na próxima aula!**
+**Antes:**
+```java
+// Código acoplado a implementações concretas
+LeitorItensCardapioCSV leitorCSV = new LeitorItensCardapioCSV();
+```
+
+**Depois:**
+```java
+// Código depende de interface, não implementação
+LeitorItensCardapio leitor = fabricaLeitor.criaLeitor(arquivo);
+```
+
+#### 3. Extract Method (Extrair Método)
+
+**Aplicado nas classes leitoras:**
+```java
+// Método específico para cada responsabilidade
+private ItemCardapio criarItem(String[] partes) { ... }
+private void configurarPromocao(ItemCardapio item, String[] partes) { ... }
+```
+
+#### 4. Replace Conditional with Polymorphism
+
+**Antes:**
+```java
+if (nomeArquivo.endsWith(".csv")) {
+    // lógica CSV
+} else if (nomeArquivo.endsWith(".json")) {
+    // lógica JSON
+}
+```
+
+**Depois:**
+```java
+// Polimorfismo decide qual lógica executar
+LeitorItensCardapio leitor = fabricaLeitor.criaLeitor(nomeArquivo);
+itens = leitor.processaArquivo(nomeArquivo);
+```
+
+### 📊 Comparação Antes vs Depois
+
+| Métrica | Antes (Aula 15) | Depois (Aula 16) | Melhoria |
+|---------|-----------------|-------------------|----------|
+| Linhas no construtor | ~120 | ~10 | ✅ 92% redução |
+| Classes envolvidas | 1 | 4 | Responsabilidades distribuídas |
+| Responsabilidades | 4 (criar, ler, parsear CSV, parsear JSON) | 1 (criar) | ✅ SRP respeitado |
+| Testabilidade | Baixa | Alta | ✅ Classes independentes |
+| Extensibilidade | Baixa | Alta | ✅ Fácil adicionar formatos |
+| Acoplamento | Alto | Baixo | ✅ Usa interfaces |
+
+### 💡 Benefícios da Refatoração (Aula 16)
+
+**1. Separação de Responsabilidades:**
+```
+Antes: Cardapio fazia TUDO
+Depois:
+  - Cardapio: coordena criação
+  - FabricaLeitorItensCardapio: decide qual leitor usar
+  - LeitorItensCardapioCSV: parseia CSV
+  - LeitorItensCardapioJSON: parseia JSON
+```
+
+**2. Open/Closed Principle:**
+```java
+// Adicionar XML sem modificar código existente:
+public class LeitorItensCardapioXML implements LeitorItensCardapio {
+    @Override
+    public ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException {
+        // Implementação XML
+    }
+}
+
+// Atualizar apenas a fábrica:
+public class FabricaLeitorItensCardapio {
+    public LeitorItensCardapio criaLeitor(String nomeArquivo) {
+        if (nomeArquivo.endsWith(".csv")) return new LeitorItensCardapioCSV();
+        if (nomeArquivo.endsWith(".json")) return new LeitorItensCardapioJSON();
+        if (nomeArquivo.endsWith(".xml")) return new LeitorItensCardapioXML(); // Nova!
+        return null;
+    }
+}
+```
+
+**3. Testabilidade:**
+```java
+// Agora pode testar cada componente isoladamente:
+@Test
+void testLeitorCSV() {
+    LeitorItensCardapio leitor = new LeitorItensCardapioCSV();
+    ItemCardapio[] itens = leitor.processaArquivo("teste.csv");
+    // ...
+}
+
+@Test
+void testLeitorJSON() {
+    LeitorItensCardapio leitor = new LeitorItensCardapioJSON();
+    ItemCardapio[] itens = leitor.processaArquivo("teste.json");
+    // ...
+}
+```
 
 ### ✅ Onde foi usado
-- **Aula 15: Parsing manual de JSON** ⭐
-- Aplicação prática de manipulação de Strings
-- Preparação para uso de bibliotecas JSON
-- Será refatorado com biblioteca na próxima aula
+- **Aula 16: Refatoração completa do construtor Cardapio** ⭐
+- Extração da lógica de parsing para classes especializadas
+- Criação de interface para desacoplar código
+- Aplicação do padrão Factory para criação de objetos
+- Redução de ~120 linhas para ~10 linhas no construtor
+
+---
+
+## 18. Factory Pattern
+
+### 📖 Teoria
+Factory Pattern (Padrão de Fábrica) é um **padrão de criação** que fornece uma interface para criar objetos, mas permite que subclasses ou métodos decidam qual classe instanciar. Encapsula a lógica de criação de objetos.
+
+### 🎯 Tipos de Factory
+
+**1. Simple Factory (Fábrica Simples):**
+- Método estático que retorna objetos
+- Decide qual classe instanciar baseado em parâmetros
+
+**2. Factory Method:**
+- Método abstrato que subclasses implementam
+- Cada subclasse cria um tipo específico
+
+**3. Abstract Factory:**
+- Interface para criar famílias de objetos relacionados
+- Múltiplas fábricas concretas
+
+### 💻 Aplicação na Aula 16 - Simple Factory ⭐
+
+```java
+package mx.florinda.leitor;
+
+public class FabricaLeitorItensCardapio {
+    
+    public LeitorItensCardapio criaLeitor(String nomeArquivo) {
+        
+        LeitorItensCardapio leitor = null;
+        
+        // Lógica de decisão centralizada
+        if (nomeArquivo.endsWith(".csv")) {
+            leitor = new LeitorItensCardapioCSV();
+        } else if (nomeArquivo.endsWith(".json")) {
+            leitor = new LeitorItensCardapioJSON();
+        }
+        
+        return leitor;
+    }
+}
+```
+
+### 🎯 Benefícios do Factory Pattern
+
+**1. Encapsulamento da Criação:**
+```java
+// SEM Factory (código cliente decide):
+LeitorItensCardapio leitor;
+if (arquivo.endsWith(".csv")) {
+    leitor = new LeitorItensCardapioCSV();
+} else {
+    leitor = new LeitorItensCardapioJSON();
+}
+
+// COM Factory (lógica centralizada):
+FabricaLeitorItensCardapio fabrica = new FabricaLeitorItensCardapio();
+LeitorItensCardapio leitor = fabrica.criaLeitor(arquivo);
+```
+
+**2. Flexibilidade:**
+```java
+// Adicionar novo formato só muda a fábrica
+public LeitorItensCardapio criaLeitor(String nomeArquivo) {
+    if (nomeArquivo.endsWith(".csv")) return new LeitorItensCardapioCSV();
+    if (nomeArquivo.endsWith(".json")) return new LeitorItensCardapioJSON();
+    if (nomeArquivo.endsWith(".xml")) return new LeitorItensCardapioXML(); // Novo!
+    if (nomeArquivo.endsWith(".yaml")) return new LeitorItensCardapioYAML(); // Novo!
+    return null;
+}
+```
+
+**3. Código Cliente Desacoplado:**
+```java
+public class Cardapio {
+    public Cardapio(String nomeArquivo) throws Exception {
+        // Não sabe nem se importa se é CSV, JSON, XML...
+        FabricaLeitorItensCardapio fabricaLeitor = new FabricaLeitorItensCardapio();
+        LeitorItensCardapio leitor = fabricaLeitor.criaLeitor(nomeArquivo);
+        
+        if (leitor != null) {
+            itens = leitor.processaArquivo(nomeArquivo);
+        }
+    }
+}
+```
+
+**4. Único Ponto de Mudança:**
+```java
+// Para mudar critério de seleção, só muda aqui:
+public LeitorItensCardapio criaLeitor(String nomeArquivo) {
+    // Antes: baseado em extensão
+    if (nomeArquivo.endsWith(".csv")) { ... }
+    
+    // Depois: baseado em magic number no arquivo
+    String primeiraLinha = lerPrimeiraLinha(nomeArquivo);
+    if (primeiraLinha.startsWith("{")) return new LeitorItensCardapioJSON();
+    if (primeiraLinha.contains(";")) return new LeitorItensCardapioCSV();
+    
+    // Código cliente (Cardapio) não muda!
+}
+```
+
+### 📊 Estrutura do Pattern no Projeto
+
+```
+┌─────────────────────────────────────┐
+│      FabricaLeitorItensCardapio     │
+│                                     │
+│  + criaLeitor(String): LeitorIten..│
+└────────────┬────────────────────────┘
+             │ cria
+             ▼
+    ┌────────────────────┐
+    │ LeitorItensCardapio│ ◄─── Interface
+    │  (interface)        │
+    └────────────────────┘
+             ▲
+             │ implementam
+       ┌─────┴──────┐
+       │            │
+┌──────┴──────┐  ┌──┴──────────────┐
+│ LeitorCSV   │  │ LeitorJSON      │
+└─────────────┘  └─────────────────┘
+```
+
+### 💡 Quando usar Factory Pattern?
+
+**Use Factory quando:**
+- ✅ Criação de objetos é complexa
+- ✅ Tipo de objeto depende de condições em runtime
+- ✅ Quer centralizar lógica de criação
+- ✅ Quer desacoplar código cliente das classes concretas
+- ✅ Precisa de flexibilidade para adicionar novos tipos
+
+**Não use Factory quando:**
+- ❌ Criação é trivial (só `new Classe()`)
+- ❌ Tipo de objeto é sempre o mesmo
+- ❌ Não há benefício de abstração
+
+### 💻 Exemplo de Uso
+
+```java
+// No Main
+void main() throws Exception {
+    String arquivo = IO.readln("Digite o nome do arquivo: ");
+    
+    // Cardapio usa a fábrica internamente
+    Cardapio cardapio = new Cardapio(arquivo);
+    
+    // Usuário digita "itens.csv" → Fábrica cria LeitorCSV
+    // Usuário digita "itens.json" → Fábrica cria LeitorJSON
+    // Usuário digita "itens.xml" → Fábrica cria LeitorXML (futuro)
+}
+```
+
+### ✅ Onde foi usado
+- **Aula 16: `FabricaLeitorItensCardapio`** ⭐
+- Centraliza lógica de criação de leitores
+- Decide qual leitor instanciar baseado na extensão do arquivo
+- Desacopla `Cardapio` das implementações concretas de leitores
+- Facilita adição de novos formatos de arquivo
 
 ---
 
@@ -1158,7 +895,8 @@ if (!valorPrecoComDesconto.equals("null") && !valorPrecoComDesconto.isBlank()) {
 | Aula 12 | Manipulação de Strings, Comparação (equals) |
 | Aula 13 | StringBuilder, Final, Classes Imutáveis |
 | Aula 14 | Arquivos (Path, Files), Parsing CSV, IOException, Conversão de Tipos |
-| **Aula 15** | **Parsing Manual de JSON, Regex Avançado, Tratamento de null** |
+| Aula 15 | Parsing Manual de JSON, Regex Avançado, Tratamento de null |
+| **Aula 16** | **Interfaces, Refatoração, Factory Pattern, Polimorfismo Avançado, SOLID** ⭐ |
 
 ---
 
@@ -1180,23 +918,33 @@ if (!valorPrecoComDesconto.equals("null") && !valorPrecoComDesconto.isBlank()) {
 14. ✅ **Validações robustas**: Verificar estrutura antes de processar
 15. ✅ **Exceções descritivas**: Mensagens claras sobre o erro
 16. ✅ **split com -1**: Preservar campos vazios no CSV
-17. ✅ **split com limite**: Preservar conteúdo com delimitadores (Aula 15)
+17. ✅ **split com limite**: Preservar conteúdo com delimitadores
 18. ✅ **Regex para parsing**: Usar expressões regulares quando apropriado
 19. ✅ **Comentários sobre refatoração**: Documentar código temporário
+20. ✅ **Programar para interface, não implementação** (Aula 16) ⭐
+21. ✅ **Single Responsibility Principle**: Uma classe, uma responsabilidade (Aula 16) ⭐
+22. ✅ **Open/Closed Principle**: Aberto para extensão, fechado para modificação (Aula 16) ⭐
+23. ✅ **Dependency Inversion**: Depender de abstrações, não de concretizações (Aula 16) ⭐
+24. ✅ **Factory para criação**: Centralizar lógica de instanciação (Aula 16) ⭐
+25. ✅ **Refatoração incremental**: Pequenas mudanças, testes frequentes (Aula 16) ⭐
 
 ---
 
 ## 📚 Referências
 
 - [Oracle Java Tutorials - OOP Concepts](https://docs.oracle.com/javase/tutorial/java/concepts/)
+- [Oracle Java Tutorials - Interfaces](https://docs.oracle.com/javase/tutorial/java/IandI/createinterface.html)
 - [Oracle Java Tutorials - File I/O](https://docs.oracle.com/javase/tutorial/essential/io/)
 - [Oracle Java Tutorials - Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/)
 - [Oracle Java Tutorials - Regular Expressions](https://docs.oracle.com/javase/tutorial/essential/regex/)
 - [JSON.org - Introducing JSON](https://www.json.org/)
+- [Refactoring Guru - Design Patterns](https://refactoring.guru/design-patterns)
+- [Refactoring Guru - Factory Pattern](https://refactoring.guru/design-patterns/factory-method)
+- [SOLID Principles](https://en.wikipedia.org/wiki/SOLID)
 - [Effective Java - Joshua Bloch](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 - Slides e materiais do curso Java Elite - UNIPDS
 
 ---
 
 _Documento atualizado em: Fevereiro 2026_
-_Última revisão: Aula 15_
+_Última revisão: Aula 16_

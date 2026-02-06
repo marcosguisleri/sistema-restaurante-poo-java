@@ -27,12 +27,13 @@ git config --global user.email "seu.email@exemplo.com"
 
 1. Acesse: https://github.com/new
 2. Preencha:
-   - **Repository name:** `sistema-restaurante-poo-java`
-   - **Description:** `Sistema de gerenciamento de restaurante desenvolvido em Java aplicando conceitos de POO - Projeto do Módulo 1 do curso Java Elite (UNIPDS)`
-   - **Visibility:** Public (para aparecer no seu perfil)
-   - ⚠️ **NÃO marque** "Add a README file"
-   - ⚠️ **NÃO marque** "Add .gitignore"
-   - ⚠️ **NÃO marque** "Choose a license"
+    - **Repository name:** `sistema-restaurante-poo-java`
+    - **Description:**
+      `Sistema de gerenciamento de restaurante desenvolvido em Java aplicando conceitos de POO - Projeto do Módulo 1 do curso Java Elite (UNIPDS)`
+    - **Visibility:** Public (para aparecer no seu perfil)
+    - ⚠️ **NÃO marque** "Add a README file"
+    - ⚠️ **NÃO marque** "Add .gitignore"
+    - ⚠️ **NÃO marque** "Choose a license"
 3. Clique em **Create repository**
 
 ---
@@ -78,11 +79,13 @@ Abra o arquivo `LICENSE` e substitua `[Seu Nome Aqui]` pelo seu nome real.
 Abra o terminal **dentro da pasta do seu projeto** (onde está o arquivo `.gitignore`):
 
 ### No Windows (PowerShell ou CMD)
+
 ```bash
 cd C:\caminho\para\seu\CursoProjeto
 ```
 
 ### No Linux/Mac
+
 ```bash
 cd /caminho/para/seu/CursoProjeto
 ```
@@ -94,26 +97,31 @@ cd /caminho/para/seu/CursoProjeto
 Execute os comandos **na ordem**:
 
 ### 5.1 Inicializar repositório Git
+
 ```bash
 git init
 ```
 
 ### 5.2 Adicionar todos os arquivos
+
 ```bash
 git add .
 ```
 
 ### 5.3 Fazer o primeiro commit
+
 ```bash
 git commit -m "feat: inicializa projeto com estrutura base do Restaurante (aula 10)"
 ```
 
 ### 5.4 Renomear branch para main (padrão do GitHub)
+
 ```bash
 git branch -M main
 ```
 
 ### 5.5 Conectar com o repositório remoto do GitHub
+
 **⚠️ SUBSTITUA `seu-usuario` pelo seu nome de usuário do GitHub:**
 
 ```bash
@@ -121,14 +129,16 @@ git remote add origin https://github.com/seu-usuario/sistema-restaurante-poo-jav
 ```
 
 ### 5.6 Enviar código para o GitHub
+
 ```bash
 git push -u origin main
 ```
 
 Se pedir usuário e senha:
+
 - **Usuário:** seu nome de usuário do GitHub
 - **Senha:** use um **Personal Access Token** (não a senha normal)
-  - Para criar: https://github.com/settings/tokens
+    - Para criar: https://github.com/settings/tokens
 
 ---
 
@@ -145,11 +155,13 @@ Se pedir usuário e senha:
 Sempre que fizer mudanças no código:
 
 ### 1. Verificar o que mudou
+
 ```bash
 git status
 ```
 
 ### 2. Adicionar as mudanças
+
 ```bash
 # Adicionar todos os arquivos modificados
 git add .
@@ -159,6 +171,7 @@ git add src/mx/florinda/modelo/NomeArquivo.java
 ```
 
 ### 3. Fazer o commit com mensagem descritiva
+
 ```bash
 # Exemplos de boas mensagens:
 
@@ -179,6 +192,7 @@ git commit -m "docs: atualiza README com instruções de execução"
 ```
 
 ### 4. Enviar para o GitHub
+
 ```bash
 git push
 ```
@@ -189,41 +203,46 @@ git push
 
 Use prefixos para deixar o histórico organizado:
 
-| Prefixo | Quando usar | Exemplo |
-|---------|-------------|---------|
-| `feat:` | Nova funcionalidade | `feat: adiciona cálculo de taxa de serviço` |
-| `fix:` | Correção de bug | `fix: corrige NullPointerException no getCardapio` |
-| `refactor:` | Melhoria de código | `refactor: simplifica método getSomaDosPrecos` |
-| `docs:` | Documentação | `docs: adiciona javadoc nas classes do modelo` |
-| `style:` | Formatação | `style: ajusta indentação do código` |
-| `test:` | Testes | `test: adiciona testes unitários para Cardapio` |
-| `chore:` | Tarefas gerais | `chore: atualiza .gitignore` |
+| Prefixo     | Quando usar         | Exemplo                                            |
+|-------------|---------------------|----------------------------------------------------|
+| `feat:`     | Nova funcionalidade | `feat: adiciona cálculo de taxa de serviço`        |
+| `fix:`      | Correção de bug     | `fix: corrige NullPointerException no getCardapio` |
+| `refactor:` | Melhoria de código  | `refactor: simplifica método getSomaDosPrecos`     |
+| `docs:`     | Documentação        | `docs: adiciona javadoc nas classes do modelo`     |
+| `style:`    | Formatação          | `style: ajusta indentação do código`               |
+| `test:`     | Testes              | `test: adiciona testes unitários para Cardapio`    |
+| `chore:`    | Tarefas gerais      | `chore: atualiza .gitignore`                       |
 
 ---
 
 ## 🆘 Comandos Úteis de Emergência
 
 ### Desfazer último commit (mas manter as mudanças)
+
 ```bash
 git reset --soft HEAD~1
 ```
 
 ### Descartar mudanças não commitadas
+
 ```bash
 git checkout -- nome-do-arquivo.java
 ```
 
 ### Ver histórico de commits
+
 ```bash
 git log --oneline
 ```
 
 ### Ver diferenças do que mudou
+
 ```bash
 git diff
 ```
 
 ### Ver branches
+
 ```bash
 git branch -a
 ```
@@ -278,20 +297,26 @@ git push
 ## ❓ Problemas Comuns
 
 ### "fatal: not a git repository"
+
 **Solução:** Você não está na pasta correta. Use `cd` para ir até a pasta do projeto.
 
 ### "Permission denied"
+
 **Solução:** Use Personal Access Token em vez de senha.
 
 ### "Updates were rejected"
+
 **Solução:** Alguém fez mudanças no GitHub. Puxe primeiro:
+
 ```bash
 git pull origin main
 git push
 ```
 
 ### Conflito de merge
+
 **Solução:** Edite o arquivo com conflito, depois:
+
 ```bash
 git add .
 git commit -m "fix: resolve conflito de merge"
@@ -303,6 +328,7 @@ git push
 ## 🎓 Próximos Passos
 
 Depois de dominar o básico, você pode aprender:
+
 - [ ] Branches (para trabalhar em funcionalidades isoladas)
 - [ ] Pull Requests (para contribuir em projetos)
 - [ ] GitHub Actions (CI/CD automático)

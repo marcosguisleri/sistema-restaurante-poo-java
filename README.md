@@ -6,7 +6,7 @@
 
 Sistema de gerenciamento para o **Restaurante da Dona Florinda**, desenvolvido como projeto prático do **Módulo 1 - Introdução ao Java** do curso **Java Elite** da **UNIPDS**.
 
-O projeto evolui ao longo das 19 aulas, aplicando progressivamente conceitos de **Programação Orientada a Objetos (POO)**, desde código estruturado até implementações avançadas com herança, polimorfismo, interfaces, classes abstratas e tratamento de exceções.
+O projeto evolui ao longo das 19 aulas, aplicando progressivamente conceitos de **Programação Orientada a Objetos (POO)**, desde código estruturado até implementações avançadas com herança, polimorfismo, **interfaces**, **refatoração**, classes abstratas e tratamento de exceções.
 
 ---
 
@@ -25,8 +25,11 @@ Este é um sistema de cardápio digital inspirado no universo do **Chaves**, des
 - ✅ StringBuilder e Performance
 - ✅ Modificador Final
 - ✅ Classes Imutáveis
-- ✅ **Leitura de Arquivos CSV** ← Novidade da Aula 14!
-- ✅ **Tratamento de Exceções (IOException)**
+- ✅ Leitura de Arquivos CSV e JSON
+- ✅ Tratamento de Exceções
+- ✅ **Interfaces** ← Novidade da Aula 16! ⭐
+- ✅ **Refatoração de Código** ← Novidade da Aula 16! ⭐
+- ✅ **Factory Pattern** ← Novidade da Aula 16! ⭐
 
 ---
 
@@ -39,7 +42,8 @@ Este é um sistema de cardápio digital inspirado no universo do **Chaves**, des
 - 🌾 Identificação de itens sem glúten
 - 🔍 Busca de itens por ID
 - 📊 Relatórios (soma de preços, itens em promoção, etc.)
-- 📄 **Carregamento dinâmico de cardápio via arquivo CSV** ⭐
+- 📄 **Carregamento dinâmico via CSV ou JSON** ⭐
+- 🏭 **Arquitetura extensível com Factory Pattern** ⭐
 
 ---
 
@@ -47,36 +51,36 @@ Este é um sistema de cardápio digital inspirado no universo do **Chaves**, des
 
 ```
 sistema-restaurante-poo-java/
-├── src/
-│   ├── mx/florinda/
-│   │   ├── cli/
-│   │   │   └── Main.java                    # Ponto de entrada da aplicação
-│   │   └── modelo/
-│   │       ├── Cardapio.java                # Gerencia a coleção de itens (refatorado!)
-│   │       ├── CategoriaCardapio.java       # Enum com categorias
-│   │       ├── ItemCardapio.java            # Classe base dos itens
-│   │       ├── ItemCardapioBebida.java      # Especialização para bebidas
-│   │       ├── ItemCardapioIsento.java      # Itens isentos de imposto
-│   │       ├── ItemCardapioSemGluten.java   # Itens sem glúten
-│   │       └── Restaurante.java             # Representa o restaurante
-│   └── guisleri/exercicios/
-│       ├── aula12/string/
-│       │   └── Main.java                    # Exercícios de String
-│       └── aula13/stringbuilder/
-│           ├── exe01/
-│           │   ├── Main.java                # Construtor de Relatórios
-│           │   └── Produto.java             # Classe Produto
-│           └── exe02/
-│               ├── Main.java                # Teste de Coordenada
-│               └── Coordenada.java          # Classe imutável
-├── itens-cardapio.csv                       # Dados do cardápio (CSV) ⭐ NOVO
-├── itens-cardapio.json                      # Dados do cardápio (JSON) - em breve
-├── docs/
-│   ├── evolucao-do-projeto.md              # Histórico de mudanças
-│   └── conceitos-aprendidos.md             # Conceitos de POO aplicados
-├── .gitignore
-├── LICENSE
-└── README.md
+├── .idea/                          # Configurações do IntelliJ IDEA
+├── docs/                           # Documentação do projeto
+│   ├── conceitos-aprendidos.md
+│   └── evolucao-do-projeto.md
+├── out/                            # Saída de compilação (binários gerados)
+├── src/                            # Código-fonte principal
+│   └── mx/florinda/
+│       ├── cli/
+│       │   └── Main.java           # Ponto de entrada da aplicação
+│       ├── leitor/                 # Leitores de arquivos (CSV/JSON) ⭐ NOVO!
+│       │   ├── FabricaLeitorItensCardapio.java
+│       │   ├── LeitorItensCardapio.java (interface)
+│       │   ├── LeitorItensCardapioCSV.java
+│       │   └── LeitorItensCardapioJSON.java
+│       └── modelo/                 # Modelos e entidades do sistema
+│           ├── isento/             # Subpacote para itens isentos
+│           │   └── ItemCardapioIsento.java
+│           ├── Cardapio.java       # Refatorado! ⭐
+│           ├── CategoriaCardapio.java
+│           ├── ItemCardapio.java
+│           ├── ItemCardapioBebida.java
+│           ├── ItemCardapioSemGluten.java
+│           └── Restaurante.java
+├── .gitignore                      # Arquivo de configuração do Git
+├── GUIA-GIT.md                     # Guia de uso do Git
+├── itens-cardapio.csv              # Dados do cardápio em formato CSV
+├── itens-cardapio.json             # Dados do cardápio em formato JSON
+├── LICENSE                         # Licença do projeto
+├── README.md                       # Descrição geral do projeto
+└── sistema-restaurante-poo-java.iml # Arquivo de configuração do IntelliJ
 ```
 
 ---
@@ -91,6 +95,7 @@ sistema-restaurante-poo-java/
 ### Passos
 
 1. Clone o repositório:
+
 ```bash
 git clone https://github.com/seu-usuario/sistema-restaurante-poo-java.git
 cd sistema-restaurante-poo-java
@@ -101,8 +106,13 @@ cd sistema-restaurante-poo-java
 3. Execute a classe `Main.java` localizada em `src/mx/florinda/cli/`
 
 4. **Digite o nome do arquivo quando solicitado:**
+
 ```
 Digite o nome do arquivo: itens-cardapio.csv
+```
+ou
+```
+Digite o nome do arquivo: itens-cardapio.json
 ```
 
 5. Siga as instruções no console para interagir com o sistema
@@ -113,7 +123,7 @@ Digite o nome do arquivo: itens-cardapio.csv
 
 ### Formato CSV (itens-cardapio.csv)
 
-O cardápio é carregado de um arquivo CSV com 9 colunas separadas por ponto-e-vírgula (`;`):
+O cardápio pode ser carregado de um arquivo CSV com 9 colunas separadas por ponto-e-vírgula (`;`):
 
 ```csv
 id;nome;descricao;preco;categoria;emPromocao;precoComDesconto;impostoIsento;ehSemGluten
@@ -121,21 +131,32 @@ id;nome;descricao;preco;categoria;emPromocao;precoComDesconto;impostoIsento;ehSe
 2;Sanduíche de Presunto;Sanduíche simples...;3.50;PRATOS_PRINCIPAIS;true;2.99;false;true
 ```
 
-**Estrutura:**
-- `id`: Identificador único (long)
-- `nome`: Nome do item
-- `descricao`: Descrição detalhada
-- `preco`: Preço em reais (double)
-- `categoria`: ENTRADA, PRATOS_PRINCIPAIS, SOBREMESAS, BEBIDAS
-- `emPromocao`: true/false
-- `precoComDesconto`: Preço promocional (obrigatório se emPromocao=true, vazio caso contrário)
-- `impostoIsento`: true/false
-- `ehSemGluten`: true/false
+### Formato JSON (itens-cardapio.json)
+
+Ou de um arquivo JSON com objetos estruturados:
+
+```json
+[
+  {
+    "id": 1,
+    "nome": "Refresco do Chaves",
+    "descricao": "Suco de limão que parece de tamarindo e tem gosto de groselha.",
+    "preco": 2.99,
+    "categoria": "BEBIDAS",
+    "emPromocao": false,
+    "precoComDesconto": null,
+    "impostoIsento": false,
+    "semGlutem": false
+  }
+]
+```
 
 **Vantagens:**
+
 - ✅ Adicione itens sem recompilar o código
 - ✅ Edite preços instantaneamente
 - ✅ Configure promoções facilmente
+- ✅ Escolha o formato que preferir (CSV ou JSON)
 - ✅ Escala para qualquer quantidade de itens
 
 ---
@@ -143,11 +164,13 @@ id;nome;descricao;preco;categoria;emPromocao;precoComDesconto;impostoIsento;ehSe
 ## 📚 Conceitos de POO Aplicados
 
 ### 1. **Encapsulamento**
+
 - Atributos privados com getters e setters
 - Controle de acesso aos dados
 
 ### 2. **Herança**
-```java
+
+```
 ItemCardapio (classe pai)
     ├── ItemCardapioBebida
     ├── ItemCardapioIsento
@@ -155,23 +178,71 @@ ItemCardapio (classe pai)
 ```
 
 ### 3. **Polimorfismo**
+
 - Sobrescrita de métodos (`@Override`)
 - Comportamentos específicos em subclasses
 - Exemplo: `getImposto()` calculado diferentemente em cada tipo
+- **Polimorfismo via interface** (Aula 16) ⭐
 
 ### 4. **Composição**
+
 - `Restaurante` **tem um** `Cardapio`
 - `Cardapio` **tem vários** `ItemCardapio`
+- `Cardapio` **usa** `LeitorItensCardapio` (interface)
 
 ### 5. **Enums**
+
 - `CategoriaCardapio` para tipagem segura de categorias
 
-### 6. **Manipulação de Arquivos** ⭐
+### 6. **Interfaces** ⭐ NOVO!
+
+```java
+public interface LeitorItensCardapio {
+    ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException;
+}
+
+// Implementações
+public class LeitorItensCardapioCSV implements LeitorItensCardapio { ... }
+public class LeitorItensCardapioJSON implements LeitorItensCardapio { ... }
+```
+
+**Benefícios:**
+- ✅ Define contrato claro entre componentes
+- ✅ Permite polimorfismo (mesmo tipo, diferentes implementações)
+- ✅ Desacopla código (Cardapio não conhece leitores concretos)
+- ✅ Facilita testes e extensões futuras
+
+### 7. **Refatoração** ⭐ NOVO!
+
+- Construtor do Cardapio reduzido de **120 para 10 linhas** (92% redução!)
+- Separação de responsabilidades em classes especializadas
+- Código mais legível, testável e manutenível
+
+### 8. **Factory Pattern** ⭐ NOVO!
+
+```java
+public class FabricaLeitorItensCardapio {
+    public LeitorItensCardapio criaLeitor(String nomeArquivo) {
+        if (nomeArquivo.endsWith(".csv")) return new LeitorItensCardapioCSV();
+        if (nomeArquivo.endsWith(".json")) return new LeitorItensCardapioJSON();
+        return null;
+    }
+}
+```
+
+**Benefícios:**
+- ✅ Centraliza lógica de criação de objetos
+- ✅ Cliente não precisa saber qual classe instanciar
+- ✅ Fácil adicionar novos formatos (XML, YAML, etc.)
+
+### 9. **Manipulação de Arquivos**
+
 - Leitura com `java.nio.file.Path` e `Files`
-- Parsing de dados estruturados (CSV)
+- Parsing de dados estruturados (CSV e JSON)
 - Validação de integridade dos dados
 
-### 7. **Tratamento de Exceções** ⭐
+### 10. **Tratamento de Exceções**
+
 - `IOException` para erros de leitura
 - Validações com mensagens descritivas
 - Tratamento robusto de erros
@@ -180,13 +251,20 @@ ItemCardapio (classe pai)
 
 ## 🎯 Exemplos de Uso
 
-### Inicialização do Sistema
+### Inicialização do Sistema (CSV)
+
 ```
 Digite o nome do arquivo: itens-cardapio.csv
-Cardápio carregado com sucesso! 7 itens disponíveis.
+```
+
+### Inicialização do Sistema (JSON)
+
+```
+Digite o nome do arquivo: itens-cardapio.json
 ```
 
 ### Consultar item do cardápio
+
 ```
 Digite um id de um item de cardápio: 1
 
@@ -200,6 +278,7 @@ Imposto: 1.495
 ```
 
 ### Item em promoção
+
 ```
 Digite um id de um item de cardápio: 2
 
@@ -214,33 +293,100 @@ Este item não contém glúten.
 
 ---
 
-## 🔄 Evolução do Código (Aula 14)
+## 🔄 Evolução do Código
 
-### ANTES (Instanciação Manual)
+### Aula 14 → Aula 15: Suporte Multi-Formato
+
+**ANTES (Aula 14):**
 ```java
-public Cardapio() {
-    itens = new ItemCardapio[7];
-    itens[0] = new ItemCardapio(1, "Refresco do Chaves", ...);
-    itens[1] = new ItemCardapioSemGluten(2, "Sanduíche", ...);
-    // ... mais 5 itens
-    
-    // Configurar promoções manualmente
-    itens[1].setPromocao(2.99);
-    // ...
+// Suportava apenas CSV
+if (nomeArquivo.endsWith(".csv")) {
+    // parsing CSV
 }
 ```
-❌ ~65 linhas de código  
-❌ Recompilação necessária  
-❌ Propenso a erros
 
-### DEPOIS (Leitura de CSV)
+**DEPOIS (Aula 15):**
 ```java
-String nomeArquivo = IO.readln("Digite o nome do arquivo: ");
-Cardapio cardapio = new Cardapio(nomeArquivo);
+// Suporta CSV E JSON
+if (nomeArquivo.endsWith(".csv")) {
+    // parsing CSV
+} else if (nomeArquivo.endsWith(".json")) {
+    // parsing JSON
+}
 ```
-✅ ~55 linhas (genérico)  
-✅ Sem recompilação  
-✅ Escalabilidade ilimitada
+
+### Aula 15 → Aula 16: Refatoração com Interfaces ⭐
+
+**ANTES (Aula 15) - Construtor com ~120 linhas:**
+```java
+public Cardapio(String nomeArquivo) throws IOException {
+    // Leitura do arquivo
+    Path arquivo = Path.of(nomeArquivo);
+    String conteudo = Files.readString(arquivo);
+    
+    // 50+ linhas de parsing CSV
+    if (nomeArquivo.endsWith(".csv")) {
+        // lógica CSV inline
+    }
+    
+    // 60+ linhas de parsing JSON
+    else if (nomeArquivo.endsWith(".json")) {
+        // lógica JSON inline
+    }
+}
+```
+
+**Problemas:**
+- ❌ Construtor gigante (120 linhas)
+- ❌ Múltiplas responsabilidades
+- ❌ Difícil de testar
+- ❌ Difícil de estender
+
+**DEPOIS (Aula 16) - Construtor com ~10 linhas:**
+```java
+public Cardapio(String nomeArquivo) throws Exception {
+    FabricaLeitorItensCardapio fabricaLeitor = new FabricaLeitorItensCardapio();
+    LeitorItensCardapio leitor = fabricaLeitor.criaLeitor(nomeArquivo);
+    
+    if (leitor != null) {
+        itens = leitor.processaArquivo(nomeArquivo);
+    } else {
+        IO.println("O nome/extensão do arquivo é inválido(a) - " + nomeArquivo);
+        itens = new ItemCardapio[0];
+    }
+}
+```
+
+**Melhorias:**
+- ✅ **92% redução** no construtor (120 → 10 linhas)
+- ✅ **Responsabilidade única**: criar cardápio
+- ✅ **Lógica separada**: cada formato em sua classe
+- ✅ **Fácil estender**: adicionar XML = criar `LeitorItensCardapioXML`
+- ✅ **Testável**: cada componente independente
+- ✅ **Baixo acoplamento**: usa interface, não implementação
+
+---
+
+## 🏗️ Arquitetura (Aula 16)
+
+```
+Main
+  │
+  └─> Restaurante
+        │
+        └─> Cardapio
+              │
+              └─> FabricaLeitorItensCardapio
+                    │
+                    ├─> LeitorItensCardapioCSV (implements LeitorItensCardapio)
+                    │
+                    └─> LeitorItensCardapioJSON (implements LeitorItensCardapio)
+```
+
+**Princípios SOLID aplicados:**
+- ✅ **Single Responsibility**: Cada classe uma responsabilidade
+- ✅ **Open/Closed**: Aberto para extensão, fechado para modificação
+- ✅ **Dependency Inversion**: Depende de interface, não implementação
 
 ---
 
@@ -257,31 +403,31 @@ Cardapio cardapio = new Cardapio(nomeArquivo);
 **Instituição:** UNIPDS (Pós-Graduação)  
 **Módulo:** 01 - Introdução ao Java  
 **Total de Aulas:** 19 videoaulas  
-**Aula Atual:** 14 - Praticando com Arquivo CSV ✅
+**Aula Atual:** 16 - Refatoração e Interfaces ✅
 
-### 📚 Conteúdo do Módulo 1
+### 📚 Progresso do Módulo 1
 
-1. ✅ O Que é Java?
-2. ✅ JVM, JSR e JEP
-3. ✅ Variáveis, Operadores e Condicionais
-4. ✅ Arrays e Laços de Repetição
-5. ✅ Classes, Atributos e Objetos
-6. ✅ Métodos e Construtores
-7. ✅ Arrays de Objetos, Composição e Enums
-8. ✅ IntelliJ IDE e Debug
-9. ✅ Organizando em Arquivos e Herança
-10. ✅ Pacotes, Modificadores de Acesso, Getters e Setters
-11. ✅ Protected
-12. ✅ String
-13. ✅ Imutabilidade, StringBuilder e Final
-14. ✅ **Praticando com Arquivo CSV** ← Você está aqui! ⭐
-15. ⏳ Praticando com Arquivo JSON
-16. ⏳ Refatoração e Interfaces
-17. ⏳ Classes Abstratas e Static
-18. ⏳ Object, Classes Wrapper e Javadoc
-19. ⏳ JARs e Exceptions
+**Bloco 1-3: Fundamentos (Aulas 1-10)** ✅
+- Variáveis, Operadores, Arrays
+- Classes, Objetos, Métodos
+- Herança, Pacotes, Modificadores
 
-> **Nota:** Este repositório documenta meu aprendizado a partir da **Aula 10**, onde começou o versionamento do código. O projeto continua evoluindo nas próximas 5 aulas do módulo.
+**Bloco 4: POO Avançada (Aulas 11-13)** ✅
+- ✅ Protected
+- ✅ String
+- ✅ Imutabilidade, StringBuilder e Final
+
+**Bloco 5: Arquivos e Dados (Aulas 14-15)** ✅
+- ✅ Praticando com Arquivo CSV
+- ✅ Praticando com Arquivo JSON
+
+**Bloco 6: Design Avançado (Aulas 16-19)** ← **Você está aqui!**
+- ✅ **Refatoração e Interfaces** ⭐
+- ⏳ Classes Abstratas e Static
+- ⏳ Object, Classes Wrapper e Javadoc
+- ⏳ JARs e Exceptions
+
+> **Nota:** Este repositório documenta meu aprendizado a partir da **Aula 10**, onde começou o versionamento do código. O projeto continua evoluindo nas próximas 3 aulas do módulo.
 
 ---
 
@@ -290,8 +436,9 @@ Cardapio cardapio = new Cardapio(nomeArquivo);
 - **Linguagem:** Java 21+
 - **IDE:** IntelliJ IDEA
 - **Paradigma:** Programação Orientada a Objetos (POO)
+- **Design Patterns:** Factory Pattern
 - **I/O:** java.nio.file (Path, Files)
-- **Formato de Dados:** CSV (Comma-Separated Values)
+- **Formatos de Dados:** CSV, JSON
 - **Controle de Versão:** Git & GitHub
 
 ---
@@ -300,11 +447,39 @@ Cardapio cardapio = new Cardapio(nomeArquivo);
 
 | Métrica | Valor |
 |---------|-------|
-| Classes Java | 12+ |
-| Linhas de código | ~600+ |
-| Conceitos POO | 9 aplicados |
-| Aulas concluídas | 14 de 19 |
-| Arquivos de dados | 2 (CSV, JSON) |
+| Classes Java | 16+ |
+| Interfaces | 1 (LeitorItensCardapio) |
+| Pacotes | 3 (cli, modelo, leitor) |
+| Linhas de código | ~700+ |
+| Conceitos POO | 13 aplicados |
+| Padrões de projeto | 1 (Factory) |
+| Aulas concluídas | 16 de 19 |
+| Formatos suportados | 2 (CSV, JSON) |
+| Redução no construtor | 92% (Aula 16) |
+
+---
+
+## 🎯 Destaques da Aula 16
+
+### Antes da Refatoração
+- 1 classe gigante (Cardapio) com 120 linhas no construtor
+- Múltiplas responsabilidades misturadas
+- Difícil de testar e estender
+
+### Depois da Refatoração
+- 5 classes organizadas em pacotes
+- 1 interface definindo contrato
+- 1 factory centralizando criação
+- Construtor reduzido para 10 linhas
+- Código testável e extensível
+
+### Benefícios Alcançados
+✅ **Separação de responsabilidades**  
+✅ **Código mais limpo e legível**  
+✅ **Fácil adicionar novos formatos**  
+✅ **Testabilidade individual**  
+✅ **Baixo acoplamento**  
+✅ **Alta coesão**
 
 ---
 

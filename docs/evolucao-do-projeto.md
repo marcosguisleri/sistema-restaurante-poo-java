@@ -34,12 +34,12 @@ Acompanhar a transformação progressiva do código, desde uma implementação e
 - String ✅
 - Imutabilidade, StringBuilder e Final ✅
 
-**Bloco 5 - Arquivos e Dados (Aulas 14-15)** ← **VOCÊ ESTÁ AQUI**
+**Bloco 5 - Arquivos e Dados (Aulas 14-15)**
 - Praticando com Arquivo CSV ✅
 - Praticando com Arquivo JSON ✅
 
-**Bloco 6 - Design Avançado (Aulas 16-19)**
-- Refatoração e Interfaces
+**Bloco 6 - Design Avançado (Aulas 16-19)** ← **VOCÊ ESTÁ AQUI**
+- Refatoração e Interfaces ✅
 - Classes Abstratas e Static
 - Object, Classes Wrapper e Javadoc
 - JARs e Exceptions
@@ -115,33 +115,6 @@ ItemCardapio (classe base)
 - ✅ Geração automática de getters/setters
 - ✅ Encapsulamento
 
-#### 💡 Aprendizado Chave
-
-**Protected permite acesso por:**
-- ✅ Classes no **mesmo pacote**
-- ✅ **Subclasses** (mesmo em outros pacotes)
-- ❌ NÃO permite acesso público geral
-
-**Diferença dos Modificadores:**
-
-| Modificador | Mesma Classe | Mesmo Pacote | Subclasse (outro pacote) | Qualquer Classe |
-|-------------|--------------|--------------|--------------------------|-----------------|
-| `private`   | ✅           | ❌           | ❌                       | ❌              |
-| `default`   | ✅           | ✅           | ❌                       | ❌              |
-| `protected` | ✅           | ✅           | ✅                       | ❌              |
-| `public`    | ✅           | ✅           | ✅                       | ✅              |
-
-#### 🛠️ Funcionalidades da IDE Aprendidas
-- **Geração de Getters/Setters:** `Alt + Insert` → Generate → Getters and Setters
-- Seleção automática de atributos
-- Geração em lote (todos de uma vez)
-
-#### 🎯 Por que usar Getters e Setters?
-- ✅ **Encapsulamento:** Protege atributos privados
-- ✅ **Validação:** Pode adicionar lógica antes de setar valores
-- ✅ **Flexibilidade:** Permite mudar implementação interna sem quebrar código externo
-- ✅ **Padrão JavaBeans:** Convenção da linguagem
-
 ---
 
 ### Aula 12 - String
@@ -167,35 +140,6 @@ ItemCardapio (classe base)
 - ✅ Comparação de Strings (== vs equals())
 - ✅ Imutabilidade de Strings
 - ✅ Case-sensitivity
-
-#### 📚 Métodos String Aprendidos
-
-**Informações sobre a String:**
-- `length()` - Retorna tamanho da string
-- `charAt(index)` - Retorna caractere em uma posição
-- `isEmpty()` - Verifica se está vazia
-
-**Verificações:**
-- `contains(String)` - Verifica se contém uma substring
-- `startsWith(String)` - Verifica se começa com determinado texto
-- `endsWith(String)` - Verifica se termina com determinado texto
-
-**Comparações:**
-- `==` - Compara referências (NÃO usar para conteúdo!)
-- `equals(String)` - Compara conteúdo (case-sensitive)
-- `equalsIgnoreCase(String)` - Compara conteúdo (ignora maiúsculas/minúsculas)
-
-**Transformações:**
-- `toUpperCase()` - Converte para maiúsculas
-- `toLowerCase()` - Converte para minúsculas
-- `replace(old, new)` - Substitui caracteres/texto
-- `trim()` - Remove espaços nas extremidades
-- `concat(String)` - Concatena strings
-
-**Extração:**
-- `substring(start)` - Extrai do índice até o final
-- `substring(start, end)` - Extrai entre índices
-- `split(delimiter)` - Divide string em array
 
 ---
 
@@ -270,80 +214,6 @@ ItemCardapio (classe base)
 - ✅ Separação de dados e lógica de negócio
 - ✅ Enum.valueOf() para conversão de strings em enums
 
-#### 📊 Formato do CSV
-
-```csv
-id;nome;descricao;preco;categoria;emPromocao;precoComDesconto;impostoIsento;ehSemGluten
-1;Refresco do Chaves;Suco de limão...;2.99;BEBIDAS;false;;false;false
-2;Sanduíche de Presunto;Sanduíche simples...;3.50;PRATOS_PRINCIPAIS;true;2.99;false;true
-```
-
-**Validações implementadas:**
-- Mínimo de 9 colunas
-- Preço com desconto obrigatório quando `emPromocao = true`
-- Tratamento de campos vazios (`;;` indica campo vazio)
-
-#### 💡 Evolução do Código
-
-**ANTES (Aula 13):**
-```java
-public Cardapio() {
-    itens = new ItemCardapio[7];
-    
-    itens[0] = new ItemCardapio(1, "Refresco do Chaves", ...);
-    itens[1] = new ItemCardapioSemGluten(2, "Sanduíche", ...);
-    // ... 5 itens mais
-    
-    // Configurar promoções manualmente
-    itens[1].setPromocao(2.99);
-    // ...
-}
-```
-
-**Problemas:**
-- ❌ ~65 linhas de código repetitivo
-- ❌ Necessário recompilar para adicionar itens
-- ❌ Propenso a erros de digitação
-- ❌ Difícil manutenção
-
-**DEPOIS (Aula 14):**
-```java
-// No Main
-String nomeArquivo = IO.readln("Digite o nome do arquivo: ");
-Cardapio cardapio = new Cardapio(nomeArquivo);
-```
-
-**Vantagens:**
-- ✅ ~55 linhas mas genérico (funciona para qualquer quantidade de itens)
-- ✅ Novos itens sem recompilar (só editar CSV)
-- ✅ Validações garantem integridade
-- ✅ Separação de dados e lógica
-
-#### 🎯 Lições Aprendidas
-
-1. **Separação de Dados e Lógica**: Dados em arquivos externos, lógica no código
-2. **Validação é Investimento**: Cada validação previne horas de debug futuro
-3. **Strings São Poderosas**: Métodos da Aula 13 foram cruciais aqui (`split`, `strip`, `isEmpty`, `endsWith`)
-4. **Refatoração Traz Clareza**: Código menor E mais poderoso ao mesmo tempo
-5. **Hard-coding é Limitante**: Fácil no começo, pesadelo depois
-
-#### 📊 Impacto nas Métricas
-
-| Métrica | Antes | Depois | Melhoria |
-|---------|-------|--------|----------|
-| Linhas de código | ~65 | ~55 | ✅ 15% redução |
-| Escalabilidade | 7 itens fixos | Ilimitada | ✅ ∞ |
-| Recompilação | Sempre | Nunca | ✅ 100% |
-| Manutenibilidade | Baixa | Alta | ✅ 900% |
-
-#### 🔗 Conexão com Aula Anterior
-
-**Aula 13 (Strings) foi essencial para Aula 14!**
-- `split(";", -1)` → separar colunas CSV
-- `strip()` → limpar espaços
-- `isEmpty()` / `isBlank()` → validações
-- `endsWith()` → identificar tipo de arquivo
-
 ---
 
 ### Aula 15 - Praticando com Arquivo JSON
@@ -379,156 +249,272 @@ Cardapio cardapio = new Cardapio(nomeArquivo);
 - ✅ Split com limite para preservar conteúdo
 - ✅ Verificação de tipo de arquivo por extensão
 
-#### 📊 Formato do JSON
-
-```json
-[
-  {
-    "id": 1,
-    "nome": "Refresco do Chaves",
-    "descricao": "Suco de limão que parece de tamarindo e tem gosto de groselha.",
-    "preco": 2.99,
-    "categoria": "BEBIDAS",
-    "emPromocao": false,
-    "precoComDesconto": null,
-    "impostoIsento": false,
-    "semGlutem": false
-  }
-]
-```
-
-#### 💻 Código Principal - Seção JSON
-
-```java
-} else if (nomeArquivo.endsWith(".json")) {
-
-    // Trata o JSON por posição, refatoração na próxima aula
-    linha = linha.replace("[", "");
-    linha = linha.replace("]", "");
-    linha = linha.replace("{", "");
-    linha = linha.replace("}", "");
-
-    // Split usando regex para pegar apenas vírgulas que separam campos
-    String[] partes = linha.split(",\\s*\"");
-    
-    // Limpa as aspas de cada parte
-    for (int j = 0; j < partes.length; j++) {
-        partes[j] = partes[j].replace("\"", "");
-    }
-
-    // Extração dos campos (id, nome, descricao, etc.)
-    // ... código de parsing ...
-
-    // Tratamento especial para valores null
-    if (!valorPrecoComDesconto.equals("null") && !valorPrecoComDesconto.isBlank()) {
-        double precoComDesconto = Double.parseDouble(valorPrecoComDesconto);
-        item.setPromocao(precoComDesconto);
-    }
-
-    itens[i] = item;
-
-} else {
-    IO.println("Nome do arquivo inválido! - " + nomeArquivo);
-}
-```
-
-#### 🎯 Desafios e Soluções
-
-**Desafio 1: Descrições com Vírgulas**
-```json
-"descricao": "Suco de limão, que parece de tamarindo e tem gosto de groselha."
-```
-**Solução:** Usar regex `",\\s*\""` para dividir apenas nas vírgulas seguidas de aspas (separadores de campos)
-
-**Desafio 2: Valores com Dois-Pontos**
-```json
-"descricao": "Texto: com: dois-pontos"
-```
-**Solução:** Usar `split(":", 2)` com limite 2 para preservar conteúdo após primeiro dois-pontos
-
-**Desafio 3: Valores Null**
-```json
-"precoComDesconto": null
-```
-**Solução:** Verificar se valor é string "null" antes de fazer parsing
-
-#### 💡 Evolução do Código
-
-**Compatibilidade Multi-Formato:**
-
-```java
-// Agora suporta AMBOS os formatos!
-String nomeArquivo = IO.readln("Digite o nome do arquivo: ");
-
-// CSV
-Cardapio cardapio1 = new Cardapio("itens-cardapio.csv");
-
-// JSON  
-Cardapio cardapio2 = new Cardapio("itens-cardapio.json");
-```
-
-**Vantagens:**
-- ✅ Flexibilidade de formato de dados
-- ✅ Mesmo código funciona para CSV e JSON
-- ✅ Detecção automática por extensão
-- ✅ Reutilização da lógica de instanciação
-
-#### 🎯 Lições Aprendidas
-
-1. **Regex é Poderoso**: Expressões regulares resolvem problemas complexos de parsing
-2. **Split com Limite**: `split(":", 2)` preserva conteúdo após primeiro delimitador
-3. **Null em JSON**: String "null" é diferente de null Java
-4. **Parsing Manual tem Limites**: Funciona para casos simples, mas bibliotecas são melhores para produção
-5. **Prática Pedagógica**: Entender estrutura interna antes de usar bibliotecas
-
-#### 📊 Comparação CSV vs JSON
-
-| Aspecto | CSV | JSON |
-|---------|-----|------|
-| Legibilidade | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Compacto | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-| Estruturado | ⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Aninhamento | ❌ | ✅ |
-| Tipos de dados | Limitado | Completo |
-| Facilidade parsing | Simples | Médio (manual) |
-
-#### ⚠️ Nota Importante
-
-**Este é um parsing TEMPORÁRIO!**
-
-O código atual usa manipulação manual de strings para fins **pedagógicos**. Na próxima aula (Aula 16 - Refatoração), será:
-- ✅ Introduzida biblioteca JSON (Gson, Jackson ou JSON-B)
-- ✅ Refatorado para usar parsing profissional
-- ✅ Comparadas as abordagens: manual vs biblioteca
-
-**Limitações do Parsing Manual:**
-- ❌ JSON aninhado (objetos dentro de objetos)
-- ❌ Arrays complexos
-- ❌ Strings com caracteres especiais
-- ❌ JSON não padronizado
-
-#### 🔗 Conexão com Aulas Anteriores
-
-**Aula 12 (String) + Aula 13 (StringBuilder) + Aula 14 (CSV) = Aula 15 (JSON)!**
-- `replace()` → limpar caracteres estruturais
-- `split()` com regex → dividir campos
-- `split()` com limite → preservar conteúdo
-- `trim()` → limpar espaços
-- `equals()` → comparar com "null"
-- Experiência com CSV facilitou entendimento de JSON
-
 ---
 
 ### Aula 16 - Refatoração e Interfaces
 
-**Status:** ⏳ Aguardando implementação
+**Status:** ✅ Concluída  
+**Data:** Fevereiro 2026
 
-#### 📝 O que será aprendido
-- Técnicas de refatoração
-- Conceito de Interfaces
-- Programação para interfaces
-- Contratos e implementações
-- **Refatoração do parsing JSON com biblioteca** ⭐
+#### ✨ Novidades Implementadas
+
+**Criação do Pacote `leitor`:**
+- Novo pacote `mx.florinda.leitor` para organizar lógica de leitura de arquivos
+- Separação de responsabilidades: modelo vs leitura de dados
+
+**Interface `LeitorItensCardapio`:**
+```java
+public interface LeitorItensCardapio {
+    public abstract ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException;
+}
+```
+- Define contrato para leitores de arquivo
+- Método `processaArquivo()` que todas as implementações devem ter
+
+**Classe `LeitorItensCardapioCSV`:**
+- Implementa `LeitorItensCardapio`
+- Contém toda a lógica de parsing CSV (movida do `Cardapio`)
+- Método `processaArquivo()` retorna array de `ItemCardapio`
+- ~70 linhas de código especializado em CSV
+
+**Classe `LeitorItensCardapioJSON`:**
+- Implementa `LeitorItensCardapio`
+- Contém toda a lógica de parsing JSON (movida do `Cardapio`)
+- Método `processaArquivo()` retorna array de `ItemCardapio`
+- ~90 linhas de código especializado em JSON
+
+**Classe `FabricaLeitorItensCardapio` (Factory Pattern):**
+```java
+public class FabricaLeitorItensCardapio {
+    public LeitorItensCardapio criaLeitor(String nomeArquivo) {
+        if (nomeArquivo.endsWith(".csv")) {
+            return new LeitorItensCardapioCSV();
+        } else if (nomeArquivo.endsWith(".json")) {
+            return new LeitorItensCardapioJSON();
+        }
+        return null;
+    }
+}
+```
+- Centraliza lógica de criação de leitores
+- Decide qual leitor instanciar baseado na extensão do arquivo
+- Padrão de projeto Factory (Simple Factory)
+
+**Refatoração do Construtor `Cardapio`:**
+```java
+public Cardapio(String nomeArquivo) throws Exception {
+    FabricaLeitorItensCardapio fabricaLeitor = new FabricaLeitorItensCardapio();
+    LeitorItensCardapio leitor = fabricaLeitor.criaLeitor(nomeArquivo);
+    
+    if (leitor != null) {
+        itens = leitor.processaArquivo(nomeArquivo);
+    } else {
+        IO.println("O nome/extensão do arquivo é inválido(a) - " + nomeArquivo);
+        itens = new ItemCardapio[0];
+    }
+}
+```
+- Reduzido de ~120 linhas para ~10 linhas (92% de redução!)
+- Responsabilidade única: coordenar criação do cardápio
+- Delega parsing para classes especializadas
+
+**Atualização do Main:**
+- Agora lança `Exception` ao invés de `IOException`
+- Mantém mesma interface de uso para o usuário
+- Funcionamento transparente da refatoração
+
+#### 🎓 Conceitos Aplicados
+- ✅ **Interfaces**: Definição de contratos entre classes
+- ✅ **Refatoração**: Reestruturação de código sem alterar comportamento
+- ✅ **Factory Pattern**: Padrão de criação de objetos
+- ✅ **Single Responsibility Principle**: Uma classe, uma responsabilidade
+- ✅ **Open/Closed Principle**: Aberto para extensão, fechado para modificação
+- ✅ **Dependency Inversion**: Depender de abstrações (interface), não de concretizações
+- ✅ **Polimorfismo avançado**: Via interfaces
+- ✅ **Separação de responsabilidades**: Modelo, leitura e apresentação
+- ✅ **Organização em pacotes**: Novo pacote `leitor`
+
+#### 📊 Estrutura de Pacotes Atualizada
+
+```
+src/mx/florinda/
+├── cli/
+│   └── Main.java                       # Interface com usuário
+├── leitor/                             # NOVO! Lógica de leitura ⭐
+│   ├── FabricaLeitorItensCardapio.java # Factory pattern
+│   ├── LeitorItensCardapio.java        # Interface (contrato)
+│   ├── LeitorItensCardapioCSV.java     # Implementação CSV
+│   └── LeitorItensCardapioJSON.java    # Implementação JSON
+└── modelo/
+    ├── isento/
+    │   └── ItemCardapioIsento.java
+    ├── Cardapio.java                   # Refatorado! ⭐
+    ├── CategoriaCardapio.java
+    ├── ItemCardapio.java
+    ├── ItemCardapioBebida.java
+    ├── ItemCardapioSemGluten.java
+    └── Restaurante.java
+```
+
+#### 💡 Evolução do Código
+
+**ANTES (Aula 15) - Construtor Cardapio:**
+```java
+public Cardapio(String nomeArquivo) throws IOException {
+    Path arquivo = Path.of(nomeArquivo);
+    String conteudo = Files.readString(arquivo);
+    String[] linhas = conteudo.split("\n");
+    itens = new ItemCardapio[linhas.length];
+    
+    for (int i = 0; i < linhas.length; i++) {
+        String linha = linhas[i].strip();
+        
+        if (linha.isEmpty()) continue;
+        
+        if (nomeArquivo.endsWith(".csv")) {
+            // 50+ linhas de parsing CSV
+            String[] partes = linha.split(";", -1);
+            // ... validações ...
+            // ... conversões ...
+            // ... instanciação ...
+        } else if (nomeArquivo.endsWith(".json")) {
+            // 60+ linhas de parsing JSON
+            linha = linha.replace("[", "").replace("]", "");
+            // ... limpeza ...
+            // ... split com regex ...
+            // ... extração de valores ...
+        } else {
+            System.out.println("Formato inválido");
+        }
+    }
+}
+```
+
+**Problemas identificados:**
+- ❌ Construtor gigante (~120 linhas)
+- ❌ Múltiplas responsabilidades (criar + ler + parsear CSV + parsear JSON)
+- ❌ Violação do Single Responsibility Principle
+- ❌ Difícil de testar individualmente
+- ❌ Difícil adicionar novos formatos (XML, YAML, etc.)
+- ❌ Código duplicado entre CSV e JSON
+- ❌ Alto acoplamento
+
+**DEPOIS (Aula 16) - Construtor Cardapio:**
+```java
+public Cardapio(String nomeArquivo) throws Exception {
+    // Responsabilidade: coordenar criação
+    FabricaLeitorItensCardapio fabricaLeitor = new FabricaLeitorItensCardapio();
+    LeitorItensCardapio leitor = fabricaLeitor.criaLeitor(nomeArquivo);
+    
+    if (leitor != null) {
+        itens = leitor.processaArquivo(nomeArquivo);
+    } else {
+        IO.println("O nome/extensão do arquivo é inválido(a) - " + nomeArquivo);
+        itens = new ItemCardapio[0];
+    }
+}
+```
+
+**Benefícios alcançados:**
+- ✅ Construtor reduzido de ~120 para ~10 linhas (92% redução!)
+- ✅ Responsabilidade única: criar cardápio
+- ✅ Lógica de parsing em classes especializadas
+- ✅ Fácil adicionar XML, YAML, etc. (só criar `LeitorItensCardapioXML`)
+- ✅ Cada classe testável independentemente
+- ✅ Código mais legível e manutenível
+- ✅ Baixo acoplamento (usa interface, não implementação)
+- ✅ Alta coesão (cada classe faz uma coisa bem feita)
+
+#### 🔄 Técnicas de Refatoração Aplicadas
+
+**1. Extract Class (Extrair Classe):**
+- Lógica CSV → `LeitorItensCardapioCSV`
+- Lógica JSON → `LeitorItensCardapioJSON`
+- Lógica de criação → `FabricaLeitorItensCardapio`
+
+**2. Extract Interface (Extrair Interface):**
+- Criação de `LeitorItensCardapio`
+- Define comportamento comum de todos os leitores
+
+**3. Replace Conditional with Polymorphism:**
+- ANTES: `if (csv) { ... } else if (json) { ... }`
+- DEPOIS: `leitor.processaArquivo()` (polimorfismo decide)
+
+**4. Introduce Factory:**
+- Centraliza criação de objetos em `FabricaLeitorItensCardapio`
+- Cliente (`Cardapio`) não sabe qual classe concreta é instanciada
+
+#### 📊 Impacto nas Métricas
+
+| Métrica | Antes (Aula 15) | Depois (Aula 16) | Melhoria |
+|---------|-----------------|-------------------|----------|
+| Linhas no construtor | ~120 | ~10 | ✅ 92% redução |
+| Classes envolvidas | 1 | 5 | Responsabilidades distribuídas |
+| Pacotes | 2 | 3 | ✅ Novo pacote `leitor` |
+| Responsabilidades do Cardapio | 4 | 1 | ✅ SRP respeitado |
+| Testabilidade | Baixa | Alta | ✅ Classes independentes |
+| Extensibilidade | Baixa | Alta | ✅ Fácil adicionar formatos |
+| Acoplamento | Alto | Baixo | ✅ Usa interfaces |
+| Coesão | Baixa | Alta | ✅ Cada classe faz uma coisa |
+
+#### 🎯 Lições Aprendidas
+
+1. **Interfaces definem contratos**: Garantem que classes tenham comportamento esperado
+2. **Refatoração incremental**: Pequenas mudanças, testes frequentes
+3. **Factory simplifica criação**: Cliente não precisa saber qual classe instanciar
+4. **SRP facilita manutenção**: Uma classe, uma responsabilidade = código mais claro
+5. **Polimorfismo via interface**: Mesma variável, comportamentos diferentes
+6. **Open/Closed na prática**: Adicionar XML sem modificar código existente
+7. **Separação de responsabilidades**: Modelo (o quê) vs Leitor (como)
+8. **Código menor ≠ código pior**: 10 linhas bem organizadas > 120 linhas confusas
+
+#### 🚀 Extensibilidade Demonstrada
+
+**Adicionar suporte a XML (futuro):**
+
+```java
+// 1. Criar nova classe (Open/Closed: aberto para extensão)
+public class LeitorItensCardapioXML implements LeitorItensCardapio {
+    @Override
+    public ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException {
+        // Implementação XML
+        return itens;
+    }
+}
+
+// 2. Atualizar apenas a fábrica
+public class FabricaLeitorItensCardapio {
+    public LeitorItensCardapio criaLeitor(String nomeArquivo) {
+        if (nomeArquivo.endsWith(".csv")) return new LeitorItensCardapioCSV();
+        if (nomeArquivo.endsWith(".json")) return new LeitorItensCardapioJSON();
+        if (nomeArquivo.endsWith(".xml")) return new LeitorItensCardapioXML(); // NOVO!
+        return null;
+    }
+}
+
+// 3. ZERO mudanças em: Cardapio, Main, ItemCardapio, Restaurante
+```
+
+**Vantagens:**
+- ✅ Cardapio não muda
+- ✅ Main não muda
+- ✅ Modelo não muda
+- ✅ Só adiciona código novo
+- ✅ Sem risco de quebrar código existente
+
+#### 🔗 Conexão com Aulas Anteriores
+
+**Aula 14 (CSV) + Aula 15 (JSON) → Aula 16 (Refatoração):**
+- Todo código de parsing foi preservado
+- Só foi **reorganizado** em classes especializadas
+- Comportamento externo permanece idêntico
+- Qualidade interna drasticamente melhorada
+
+**Conhecimentos anteriores aplicados:**
+- Aula 10: Composição (Cardapio usa LeitorItensCardapio)
+- Aula 11: Protected (mantido nas classes de modelo)
+- Aula 12-13: String/StringBuilder (usado nos leitores)
+- Aula 14-15: Parsing (movido para classes especializadas)
 
 ---
 
@@ -649,7 +635,59 @@ if (nomeArquivo.endsWith(".csv")) {
 - ✅ Flexibilidade de formato de dados
 - ✅ Mesmo código para múltiplos formatos
 - ✅ Detecção automática por extensão
-- ✅ Preparação para uso de bibliotecas (Aula 16)
+- ✅ Preparação para refatoração (Aula 16)
+
+### v0.16 - Refatoração com Interfaces e Factory (Aula 16) ⭐
+
+**Antes:**
+```java
+public class Cardapio {
+    public Cardapio(String nomeArquivo) throws IOException {
+        // 120 linhas de código
+        // Lógica CSV inline
+        // Lógica JSON inline
+        // Múltiplas responsabilidades
+    }
+}
+```
+
+**Depois:**
+```java
+// Cardapio (10 linhas - coordena)
+public class Cardapio {
+    public Cardapio(String nomeArquivo) throws Exception {
+        FabricaLeitorItensCardapio fabrica = new FabricaLeitorItensCardapio();
+        LeitorItensCardapio leitor = fabrica.criaLeitor(nomeArquivo);
+        if (leitor != null) {
+            itens = leitor.processaArquivo(nomeArquivo);
+        }
+    }
+}
+
+// Interface (contrato)
+public interface LeitorItensCardapio {
+    ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException;
+}
+
+// Implementações especializadas
+public class LeitorItensCardapioCSV implements LeitorItensCardapio { ... }
+public class LeitorItensCardapioJSON implements LeitorItensCardapio { ... }
+
+// Factory (criação centralizada)
+public class FabricaLeitorItensCardapio {
+    public LeitorItensCardapio criaLeitor(String nomeArquivo) { ... }
+}
+```
+
+**Benefícios:**
+- ✅ **92% redução** no construtor (120 → 10 linhas)
+- ✅ **SRP**: Cada classe uma responsabilidade
+- ✅ **OCP**: Fácil adicionar XML, YAML sem modificar código existente
+- ✅ **DIP**: Depende de abstração (interface), não concretização
+- ✅ **Testabilidade**: Cada componente testável isoladamente
+- ✅ **Manutenibilidade**: Código organizado em classes coesas
+- ✅ **Extensibilidade**: Adicionar formatos = criar nova classe
+- ✅ **Baixo acoplamento**: Cardapio não sabe qual leitor é usado
 
 ---
 
@@ -657,14 +695,17 @@ if (nomeArquivo.endsWith(".csv")) {
 
 | Métrica | Valor Atual |
 |---------|-------------|
-| Classes criadas | 12+ |
-| Linhas de código | ~650+ |
-| Conceitos de POO aplicados | 10 |
+| Classes criadas | 16+ |
+| Linhas de código | ~700+ |
+| Conceitos de POO aplicados | 13 |
 | Exercícios resolvidos | 6 (aulas 10-13) |
-| Aulas versionadas | 6 de 19 |
-| Aulas concluídas | 15 de 19 |
+| Aulas versionadas | 7 de 19 |
+| Aulas concluídas | 16 de 19 |
 | Arquivos de dados | 2 (CSV e JSON) |
-| Formatos suportados | 2 (CSV e JSON) ⭐ |
+| Formatos suportados | 2 (CSV e JSON) |
+| Pacotes organizados | 3 (cli, modelo, leitor) ⭐ |
+| Interfaces criadas | 1 (LeitorItensCardapio) ⭐ |
+| Padrões de projeto | 1 (Factory) ⭐ |
 
 ---
 
@@ -680,7 +721,7 @@ if (nomeArquivo.endsWith(".csv")) {
 - [x] Aula 15 - Praticando com Arquivo JSON ✅
 
 **Bloco 6 - Design Avançado:**
-- [ ] Aula 16 - Refatoração e Interfaces (Incluirá refatoração do JSON com biblioteca!)
+- [x] Aula 16 - Refatoração e Interfaces ✅
 - [ ] Aula 17 - Classes Abstratas e Static
 - [ ] Aula 18 - Object, Classes Wrapper e Javadoc
 - [ ] Aula 19 - JARs e Exceptions (Conclusão do Módulo 1)
@@ -726,7 +767,21 @@ if (nomeArquivo.endsWith(".csv")) {
 5. **Prática Pedagógica**: Entender estrutura interna antes de usar bibliotecas
 6. **Multi-Formato**: Um sistema pode suportar múltiplos formatos simultaneamente
 7. **Regex para Delimitadores**: `",\\s*\""` captura vírgulas seguidas de aspas
-8. **Aprendizado Progressivo**: CSV → JSON manual → JSON com biblioteca (próxima aula)
+8. **Aprendizado Progressivo**: CSV → JSON manual → Refatoração (próxima aula)
+
+### Aula 16
+1. **Interfaces são contratos**: Garantem comportamento comum sem impor implementação
+2. **Refatoração preserva comportamento**: Reestrutura internamente, não externamente
+3. **Factory centraliza criação**: Cliente não precisa saber qual classe instanciar
+4. **SRP na prática**: Uma responsabilidade = código mais fácil de entender e testar
+5. **Polimorfismo via interface**: Flexibilidade sem conhecer tipos concretos
+6. **Open/Closed é poderoso**: Adicionar funcionalidades sem modificar código existente
+7. **Baixo acoplamento é meta**: Depender de abstrações, não de concretizações
+8. **Código menor pode ser melhor**: 10 linhas bem organizadas > 120 linhas confusas
+9. **Organização em pacotes**: Agrupa classes por responsabilidade
+10. **Pequenas refatorações somam**: Extrair classe, interface, método = grande impacto
+11. **Testabilidade vem de design**: Classes coesas e desacopladas são fáceis de testar
+12. **Padrões resolvem problemas comuns**: Factory, Strategy, etc. são ferramentas úteis
 
 ---
 
@@ -749,21 +804,103 @@ if (nomeArquivo.endsWith(".csv")) {
 - Formato mais expressivo que CSV
 - Suporta estruturas aninhadas (futuro)
 - Padrão da indústria para APIs
-- Preparação para uso de bibliotecas
+- Preparação para refatoração
 
-**Por que parsing manual de JSON?**
-- Objetivo pedagógico: entender estrutura
-- Reforçar manipulação de strings e regex
-- Apreciar valor de bibliotecas depois
-- Praticar lógica de parsing
+**Por que criar interfaces? (Aula 16)**
+- Define contrato claro entre componentes
+- Permite polimorfismo (mesmo tipo, diferentes implementações)
+- Desacopla código (Cardapio não conhece leitores concretos)
+- Facilita testes (pode criar mock de LeitorItensCardapio)
+- Prepara para extensões futuras (XML, YAML, banco de dados)
+
+**Por que usar Factory Pattern? (Aula 16)**
+- Centraliza lógica de criação de objetos
+- Cliente não precisa saber qual classe instanciar
+- Fácil adicionar novos tipos (só atualiza factory)
+- Encapsula regras de decisão (extensão → tipo de leitor)
+
+**Por que refatorar? (Aula 16)**
+- Código estava complexo e difícil de manter (120 linhas)
+- Múltiplas responsabilidades em uma classe
+- Difícil adicionar novos formatos
+- Impossível testar parsing isoladamente
+- Violava princípios SOLID
 
 **Estrutura de pacotes:**
+- `mx.florinda.cli` - Interface com usuário (entrada/saída)
 - `mx.florinda.modelo` - Classes de domínio (entidades do negócio)
-- `mx.florinda.cli` - Interface com o usuário (entrada/saída)
+- `mx.florinda.leitor` - Lógica de leitura de arquivos ⭐ NOVO!
 
 **Estrutura de arquivos:**
 - Raiz do projeto: arquivos de dados (CSV, JSON)
 - `src/`: código-fonte Java
+- `docs/`: documentação do projeto
+
+---
+
+## 🏗️ Arquitetura do Projeto (Aula 16)
+
+```
+┌─────────────────────────────────────────────────┐
+│                    Main                         │
+│              (Interface usuário)                │
+└────────────────────┬────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────┐
+│                 Restaurante                     │
+│          (Coordena componentes)                 │
+└────────────────────┬────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────┐
+│                  Cardapio                       │
+│         (Usa Factory para criar)                │
+└────────────────────┬────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────┐
+│          FabricaLeitorItensCardapio             │
+│         (Decide qual leitor criar)              │
+└──────────┬──────────────────────┬────────────────┘
+           │                      │
+    .csv   │                      │  .json
+           ▼                      ▼
+┌──────────────────┐    ┌──────────────────────┐
+│  LeitorCSV       │    │  LeitorJSON          │
+│  (implements     │    │  (implements         │
+│  LeitorItens...) │    │  LeitorItens...)     │
+└──────────────────┘    └──────────────────────┘
+           │                      │
+           └──────────┬───────────┘
+                      ▼
+           ┌────────────────────┐
+           │ LeitorItensCardapio│
+           │    (interface)      │
+           └────────────────────┘
+                      │
+                      ▼
+           ┌────────────────────┐
+           │  ItemCardapio[]     │
+           │  (retorno)          │
+           └────────────────────┘
+```
+
+**Fluxo de execução:**
+1. Main solicita criação de Cardapio
+2. Cardapio usa FabricaLeitorItensCardapio
+3. Factory cria LeitorCSV ou LeitorJSON (baseado em extensão)
+4. Leitor processa arquivo e retorna ItemCardapio[]
+5. Cardapio armazena itens
+6. Restaurante usa Cardapio
+7. Main exibe informações ao usuário
+
+**Vantagens da arquitetura:**
+- ✅ Separação clara de responsabilidades
+- ✅ Cada componente testável isoladamente
+- ✅ Fácil adicionar novos formatos (XML, YAML)
+- ✅ Baixo acoplamento entre componentes
+- ✅ Alta coesão dentro de cada componente
 
 ---
 
@@ -776,4 +913,4 @@ if (nomeArquivo.endsWith(".csv")) {
 ---
 
 _Documento atualizado em: Fevereiro 2026_
-_Última aula registrada: Aula 15_
+_Última aula registrada: Aula 16_

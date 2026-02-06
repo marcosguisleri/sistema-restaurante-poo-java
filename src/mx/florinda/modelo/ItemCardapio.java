@@ -12,7 +12,7 @@ public class ItemCardapio {
     private CategoriaCardapio categoria;
 
     //construtor
-    protected ItemCardapio(long id, String nome, String descricao, double preco, CategoriaCardapio categoria) {
+    public ItemCardapio(long id, String nome, String descricao, double preco, CategoriaCardapio categoria) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
@@ -40,7 +40,9 @@ public class ItemCardapio {
         return imposto;
     }
 
-    public boolean ehSemGluten() { return false; }
+    public boolean ehSemGluten() {
+        return false;
+    }
 
     public long getId() {
         return id;

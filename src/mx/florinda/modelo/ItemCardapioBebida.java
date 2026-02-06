@@ -2,7 +2,7 @@ package mx.florinda.modelo;
 
 public class ItemCardapioBebida extends ItemCardapio {
 
-    public ItemCardapioBebida (long id, String nome, String descricao, double preco, CategoriaCardapio categoria) {
+    public ItemCardapioBebida(long id, String nome, String descricao, double preco, CategoriaCardapio categoria) {
         super(id, nome, descricao, preco, categoria);
     }
 

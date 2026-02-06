@@ -20,6 +20,7 @@ Este documento consolida os **conceitos de Programação Orientada a Objetos (PO
 12. [Classes Imutáveis](#12-classes-imutáveis)
 13. [Manipulação de Arquivos](#13-manipulação-de-arquivos)
 14. [Tratamento de Exceções](#14-tratamento-de-exceções)
+15. [Parsing de JSON](#15-parsing-de-json)
 
 ---
 
@@ -441,10 +442,33 @@ if (descontoStr == null || descontoStr.isBlank()) {
 }
 ```
 
+### 💻 Aplicação na Aula 15 (JSON)
+
+```java
+// Limpeza de caracteres JSON
+linha = linha.replace("[", "");
+linha = linha.replace("]", "");
+linha = linha.replace("{", "");
+linha = linha.replace("}", "");
+linha = linha.replace("\"", "");  // Remove aspas
+
+// Split por vírgula seguida de aspas (separadores de campos JSON)
+String[] partes = linha.split(",\\s*\"");
+
+// Limpeza adicional de aspas remanescentes
+for (int j = 0; j < partes.length; j++) {
+    partes[j] = partes[j].replace("\"", "");
+}
+
+// Split com limite para preservar conteúdo com dois-pontos
+String[] propriedadesEValor = parte.split(":", 2);
+```
+
 ### ✅ Onde foi usado
 - Aula 12: TesteString com métodos básicos
 - Aula 13: Comparação de performance (String vs StringBuilder)
 - **Aula 14: Parsing de CSV** ⭐
+- **Aula 15: Parsing de JSON** ⭐
 
 ---
 
@@ -896,6 +920,235 @@ public static void main(String[] args) {
 
 ---
 
+## 15. Parsing de JSON
+
+### 📖 Teoria
+JSON (JavaScript Object Notation) é um formato leve de intercâmbio de dados baseado em texto. É fácil para humanos lerem e escreverem, e fácil para máquinas parsearem e gerarem.
+
+### 🎯 Estrutura JSON
+
+```json
+{
+  "id": 1,
+  "nome": "Refresco do Chaves",
+  "descricao": "Suco de limão...",
+  "preco": 2.99,
+  "categoria": "BEBIDAS",
+  "emPromocao": false,
+  "precoComDesconto": null,
+  "impostoIsento": false,
+  "semGlutem": false
+}
+```
+
+**Elementos JSON:**
+- `{ }` - Objeto
+- `[ ]` - Array
+- `"chave": valor` - Par chave-valor
+- Tipos: string, number, boolean, null, object, array
+
+### 💻 Abordagem Manual (Aula 15)
+
+**Nota Importante:** Esta é uma implementação **temporária** que será refatorada na próxima aula. O parsing manual de JSON não é a prática recomendada para produção.
+
+#### 1. Limpeza de Caracteres Estruturais
+
+```java
+// Remove caracteres estruturais JSON
+linha = linha.replace("[", "");
+linha = linha.replace("]", "");
+linha = linha.replace("{", "");
+linha = linha.replace("}", "");
+linha = linha.replace("\"", "");  // Remove todas as aspas
+```
+
+#### 2. Split por Vírgulas (Separadores de Campos)
+
+```java
+// Split usando regex para pegar vírgulas seguidas de aspas
+String[] partes = linha.split(",\\s*\"");
+
+// Limpa aspas remanescentes em cada parte
+for (int j = 0; j < partes.length; j++) {
+    partes[j] = partes[j].replace("\"", "");
+}
+```
+
+#### 3. Extração de Chave-Valor
+
+```java
+// Cada parte está no formato "chave: valor"
+String parteId = partes[0];  // "id: 1"
+String[] propriedadesEValorId = parteId.split(":");
+String valorId = propriedadesEValorId[1].trim();
+long id = Long.parseLong(valorId);
+```
+
+### ⚠️ Desafios do Parsing Manual
+
+**1. Descrições com Vírgulas:**
+```json
+"descricao": "Suco de limão, que parece de tamarindo e tem gosto de groselha."
+```
+- A vírgula dentro da descrição pode quebrar o split
+- Solução: usar regex mais específico `",\\s*\""`
+
+**2. Split com Limite:**
+```java
+// Usar limite 2 para campos que podem conter dois-pontos
+String[] propriedadesEValor = parte.split(":", 2);
+// "descricao: texto: com: dois-pontos" → ["descricao", " texto: com: dois-pontos"]
+```
+
+**3. Valores Null:**
+```json
+"precoComDesconto": null
+```
+```java
+// Verificar se é "null" string, não null Java
+if (!valorPrecoComDesconto.equals("null") && !valorPrecoComDesconto.isBlank()) {
+    double precoComDesconto = Double.parseDouble(valorPrecoComDesconto);
+    item.setPromocao(precoComDesconto);
+}
+```
+
+### 💻 Código Completo (Seção JSON)
+
+```java
+} else if (nomeArquivo.endsWith(".json")) {
+
+    // Trata o JSON por posição, refatoração na próxima aula
+    linha = linha.replace("[", "");
+    linha = linha.replace("]", "");
+    linha = linha.replace("{", "");
+    linha = linha.replace("}", "");
+
+    // Split usando regex para pegar apenas vírgulas que separam campos
+    String[] partes = linha.split(",\\s*\"");
+    
+    // Limpa as aspas de cada parte
+    for (int j = 0; j < partes.length; j++) {
+        partes[j] = partes[j].replace("\"", "");
+    }
+
+    String parteId = partes[0];
+    String[] propriedadesEValorId = parteId.split(":");
+    String valorId = propriedadesEValorId[1].trim();
+    long id = Long.parseLong(valorId);
+
+    String parteNome = partes[1];
+    String[] propriedadesEValorNome = parteNome.split(":", 2);
+    String nome = propriedadesEValorNome[1].trim();
+
+    String parteDescricao = partes[2];
+    String[] propriedadesEValorDescricao = parteDescricao.split(":", 2);
+    String descricao = propriedadesEValorDescricao[1].trim();
+
+    String partePreco = partes[3];
+    String[] propriedadesEValorPreco = partePreco.split(":");
+    String valorPreco = propriedadesEValorPreco[1].trim();
+    double preco = Double.parseDouble(valorPreco);
+
+    String parteCategoria = partes[4];
+    String[] propriedadesEValorCategoria = parteCategoria.split(":");
+    String valorCategoria = propriedadesEValorCategoria[1].trim();
+    CategoriaCardapio categoria = CategoriaCardapio.valueOf(valorCategoria);
+
+    ItemCardapio item;
+
+    String parteImpostoIsento = partes[7];
+    String[] propriedadesEValorImpostoIsento = parteImpostoIsento.split(":");
+    String valorImpostoIsento = propriedadesEValorImpostoIsento[1].trim();
+    boolean impostoIsento = Boolean.parseBoolean(valorImpostoIsento);
+
+    String parteSemGluten = partes[8];
+    String[] propriedadesEValorSemGluten = parteSemGluten.split(":");
+    String valorSemGluten = propriedadesEValorSemGluten[1].trim();
+    boolean ehSemGluten = Boolean.parseBoolean(valorSemGluten);
+
+    if (impostoIsento) {
+        item = new ItemCardapioIsento(id, nome, descricao, preco, categoria);
+    } else if (ehSemGluten) {
+        item = new ItemCardapioSemGluten(id, nome, descricao, preco, categoria);
+    } else if (categoria == CategoriaCardapio.BEBIDAS) {
+        item = new ItemCardapioBebida(id, nome, descricao, preco, categoria);
+    } else {
+        item = new ItemCardapio(id, nome, descricao, preco, categoria);
+    }
+
+    String parteEmPromocao = partes[5];
+    String[] propriedadesEValorEmPromocao = parteEmPromocao.split(":");
+    String valorEmPromocao = propriedadesEValorEmPromocao[1].trim();
+    boolean emPromocao = Boolean.parseBoolean(valorEmPromocao);
+
+    if (emPromocao) {
+        String partePrecoComDesconto = partes[6];
+        String[] propriedadesEValorPrecoComDesconto = partePrecoComDesconto.split(":");
+        String valorPrecoComDesconto = propriedadesEValorPrecoComDesconto[1].trim();
+        
+        if (!valorPrecoComDesconto.equals("null") && !valorPrecoComDesconto.isBlank()) {
+            double precoComDesconto = Double.parseDouble(valorPrecoComDesconto);
+            item.setPromocao(precoComDesconto);
+        }
+    }
+
+    itens[i] = item;
+}
+```
+
+### 🎯 Formato JSON Usado
+
+```json
+[
+  {
+    "id": 1,
+    "nome": "Refresco do Chaves",
+    "descricao": "Suco de limão que parece de tamarindo e tem gosto de groselha.",
+    "preco": 2.99,
+    "categoria": "BEBIDAS",
+    "emPromocao": false,
+    "precoComDesconto": null,
+    "impostoIsento": false,
+    "semGlutem": false
+  }
+]
+```
+
+### 💡 Por que não usar biblioteca JSON?
+
+**Resposta:** Esta é uma aula de **prática pedagógica**!
+
+**Objetivos da Aula 15:**
+- ✅ Reforçar manipulação de Strings (Aula 12)
+- ✅ Praticar regex e split avançado
+- ✅ Entender estrutura interna de JSON
+- ✅ Aplicar lógica de parsing
+- ✅ Preparar para refatoração (próxima aula)
+
+**Na próxima aula:**
+- Introdução a bibliotecas JSON (Gson, Jackson, JSON-B)
+- Refatoração do código usando biblioteca
+- Comparação: manual vs biblioteca
+
+### ⚠️ Limitações do Parsing Manual
+
+**Não funciona bem com:**
+- ❌ JSON aninhado (objetos dentro de objetos)
+- ❌ Arrays de objetos complexos
+- ❌ Strings com caracteres especiais
+- ❌ JSON formatado de forma não padronizada
+- ❌ Valores com vírgulas, aspas ou caracteres especiais
+
+**Por isso será refatorado na próxima aula!**
+
+### ✅ Onde foi usado
+- **Aula 15: Parsing manual de JSON** ⭐
+- Aplicação prática de manipulação de Strings
+- Preparação para uso de bibliotecas JSON
+- Será refatorado com biblioteca na próxima aula
+
+---
+
 ## 📊 Resumo de Conceitos por Aula
 
 | Aula | Conceitos Principais |
@@ -904,7 +1157,8 @@ public static void main(String[] args) {
 | Aula 11 | Modificador Protected, Geradores IDE |
 | Aula 12 | Manipulação de Strings, Comparação (equals) |
 | Aula 13 | StringBuilder, Final, Classes Imutáveis |
-| **Aula 14** | **Arquivos (Path, Files), Parsing CSV, IOException, Conversão de Tipos** |
+| Aula 14 | Arquivos (Path, Files), Parsing CSV, IOException, Conversão de Tipos |
+| **Aula 15** | **Parsing Manual de JSON, Regex Avançado, Tratamento de null** |
 
 ---
 
@@ -926,6 +1180,9 @@ public static void main(String[] args) {
 14. ✅ **Validações robustas**: Verificar estrutura antes de processar
 15. ✅ **Exceções descritivas**: Mensagens claras sobre o erro
 16. ✅ **split com -1**: Preservar campos vazios no CSV
+17. ✅ **split com limite**: Preservar conteúdo com delimitadores (Aula 15)
+18. ✅ **Regex para parsing**: Usar expressões regulares quando apropriado
+19. ✅ **Comentários sobre refatoração**: Documentar código temporário
 
 ---
 
@@ -934,10 +1191,12 @@ public static void main(String[] args) {
 - [Oracle Java Tutorials - OOP Concepts](https://docs.oracle.com/javase/tutorial/java/concepts/)
 - [Oracle Java Tutorials - File I/O](https://docs.oracle.com/javase/tutorial/essential/io/)
 - [Oracle Java Tutorials - Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/)
+- [Oracle Java Tutorials - Regular Expressions](https://docs.oracle.com/javase/tutorial/essential/regex/)
+- [JSON.org - Introducing JSON](https://www.json.org/)
 - [Effective Java - Joshua Bloch](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 - Slides e materiais do curso Java Elite - UNIPDS
 
 ---
 
 _Documento atualizado em: Fevereiro 2026_
-_Última revisão: Aula 14_
+_Última revisão: Aula 15_

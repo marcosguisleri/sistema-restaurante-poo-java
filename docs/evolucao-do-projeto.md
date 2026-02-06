@@ -36,7 +36,7 @@ Acompanhar a transformação progressiva do código, desde uma implementação e
 
 **Bloco 5 - Arquivos e Dados (Aulas 14-15)** ← **VOCÊ ESTÁ AQUI**
 - Praticando com Arquivo CSV ✅
-- Praticando com Arquivo JSON
+- Praticando com Arquivo JSON ✅
 
 **Bloco 6 - Design Avançado (Aulas 16-19)**
 - Refatoração e Interfaces
@@ -283,72 +283,6 @@ id;nome;descricao;preco;categoria;emPromocao;precoComDesconto;impostoIsento;ehSe
 - Preço com desconto obrigatório quando `emPromocao = true`
 - Tratamento de campos vazios (`;;` indica campo vazio)
 
-#### 💻 Código Principal - Cardapio.java
-
-```java
-public Cardapio(String nomeArquivo) throws IOException {
-    Path arquivo = Path.of(nomeArquivo);
-    String conteudoArquivo = Files.readString(arquivo);
-
-    String[] linhasArquivo = conteudoArquivo.split("\n");
-    itens = new ItemCardapio[linhasArquivo.length];
-
-    for (int i = 0; i < linhasArquivo.length; i++) {
-        String linha = linhasArquivo[i].strip();
-
-        if (linha.isEmpty()) {
-            continue;
-        }
-
-        if (nomeArquivo.endsWith(".csv")) {
-            String[] partes = linha.split(";", -1);
-
-            if (partes.length < 9) {
-                throw new IOException("Linha CSV inválida (esperado 9 colunas, veio " + partes.length + "): " + linha);
-            }
-
-            long id = Long.parseLong(partes[0]);
-            String nome = partes[1];
-            String descricao = partes[2];
-            double preco = Double.parseDouble(partes[3]);
-            CategoriaCardapio categoria = CategoriaCardapio.valueOf(partes[4]);
-
-            ItemCardapio item;
-
-            boolean impostoIsento = Boolean.parseBoolean(partes[7]);
-            boolean ehSemGluten = Boolean.parseBoolean(partes[8]);
-
-            if (impostoIsento) {
-                item = new ItemCardapioIsento(id, nome, descricao, preco, categoria);
-            } else if (ehSemGluten) {
-                item = new ItemCardapioSemGluten(id, nome, descricao, preco, categoria);
-            } else if (categoria == CategoriaCardapio.BEBIDAS) {
-                item = new ItemCardapioBebida(id, nome, descricao, preco, categoria);
-            } else {
-                item = new ItemCardapio(id, nome, descricao, preco, categoria);
-            }
-
-            boolean emPromocao = Boolean.parseBoolean(partes[5]);
-            if (emPromocao) {
-                String descontoStr = partes[6];
-                if (descontoStr == null || descontoStr.isBlank()) {
-                    throw new IOException("Item marcado em promoção, mas sem preço com desconto (coluna 6): " + linha);
-                }
-                double precoComDesconto = Double.parseDouble(descontoStr);
-                item.setPromocao(precoComDesconto);
-            }
-
-            itens[i] = item;
-
-        } else if (nomeArquivo.endsWith(".json")) {
-            // Implementação futura (Aula 15)
-        } else {
-            IO.println("Nome do arquivo inválido! - " + nomeArquivo);
-        }
-    }
-}
-```
-
 #### 💡 Evolução do Código
 
 **ANTES (Aula 13):**
@@ -414,12 +348,174 @@ Cardapio cardapio = new Cardapio(nomeArquivo);
 
 ### Aula 15 - Praticando com Arquivo JSON
 
-**Status:** ⏳ Aguardando implementação
+**Status:** ✅ Concluída  
+**Data:** Fevereiro 2026
 
-#### 📝 O que será aprendido
-- Leitura e escrita de arquivos JSON
-- Bibliotecas JSON em Java
-- Serialização e desserialização
+#### ✨ Novidades Implementadas
+
+**Suporte para Leitura de JSON:**
+- Implementado parsing manual de JSON no construtor do Cardápio
+- Detecta tipo de arquivo por extensão (`.json`)
+- Processa estrutura JSON através de manipulação de strings
+- Mantém compatibilidade total com CSV existente
+
+**Lógica de Parsing JSON:**
+- Remove caracteres estruturais: `[`, `]`, `{`, `}`, `"`
+- Split por regex para identificar separadores de campos: `",\\s*\""`
+- Extração de pares chave-valor com split limitado
+- Tratamento de valores `null` do JSON
+
+**Validações Específicas JSON:**
+- Verificação de campos `null` (string "null" vs null Java)
+- Tratamento de descrições com vírgulas internas
+- Split com limite `2` para campos que podem conter dois-pontos
+- Limpeza de aspas remanescentes após splits
+
+#### 🎓 Conceitos Aplicados
+- ✅ Parsing manual de JSON (abordagem pedagógica)
+- ✅ Expressões regulares (regex) para split avançado
+- ✅ Manipulação complexa de strings
+- ✅ Tratamento de valores null em JSON
+- ✅ Split com limite para preservar conteúdo
+- ✅ Verificação de tipo de arquivo por extensão
+
+#### 📊 Formato do JSON
+
+```json
+[
+  {
+    "id": 1,
+    "nome": "Refresco do Chaves",
+    "descricao": "Suco de limão que parece de tamarindo e tem gosto de groselha.",
+    "preco": 2.99,
+    "categoria": "BEBIDAS",
+    "emPromocao": false,
+    "precoComDesconto": null,
+    "impostoIsento": false,
+    "semGlutem": false
+  }
+]
+```
+
+#### 💻 Código Principal - Seção JSON
+
+```java
+} else if (nomeArquivo.endsWith(".json")) {
+
+    // Trata o JSON por posição, refatoração na próxima aula
+    linha = linha.replace("[", "");
+    linha = linha.replace("]", "");
+    linha = linha.replace("{", "");
+    linha = linha.replace("}", "");
+
+    // Split usando regex para pegar apenas vírgulas que separam campos
+    String[] partes = linha.split(",\\s*\"");
+    
+    // Limpa as aspas de cada parte
+    for (int j = 0; j < partes.length; j++) {
+        partes[j] = partes[j].replace("\"", "");
+    }
+
+    // Extração dos campos (id, nome, descricao, etc.)
+    // ... código de parsing ...
+
+    // Tratamento especial para valores null
+    if (!valorPrecoComDesconto.equals("null") && !valorPrecoComDesconto.isBlank()) {
+        double precoComDesconto = Double.parseDouble(valorPrecoComDesconto);
+        item.setPromocao(precoComDesconto);
+    }
+
+    itens[i] = item;
+
+} else {
+    IO.println("Nome do arquivo inválido! - " + nomeArquivo);
+}
+```
+
+#### 🎯 Desafios e Soluções
+
+**Desafio 1: Descrições com Vírgulas**
+```json
+"descricao": "Suco de limão, que parece de tamarindo e tem gosto de groselha."
+```
+**Solução:** Usar regex `",\\s*\""` para dividir apenas nas vírgulas seguidas de aspas (separadores de campos)
+
+**Desafio 2: Valores com Dois-Pontos**
+```json
+"descricao": "Texto: com: dois-pontos"
+```
+**Solução:** Usar `split(":", 2)` com limite 2 para preservar conteúdo após primeiro dois-pontos
+
+**Desafio 3: Valores Null**
+```json
+"precoComDesconto": null
+```
+**Solução:** Verificar se valor é string "null" antes de fazer parsing
+
+#### 💡 Evolução do Código
+
+**Compatibilidade Multi-Formato:**
+
+```java
+// Agora suporta AMBOS os formatos!
+String nomeArquivo = IO.readln("Digite o nome do arquivo: ");
+
+// CSV
+Cardapio cardapio1 = new Cardapio("itens-cardapio.csv");
+
+// JSON  
+Cardapio cardapio2 = new Cardapio("itens-cardapio.json");
+```
+
+**Vantagens:**
+- ✅ Flexibilidade de formato de dados
+- ✅ Mesmo código funciona para CSV e JSON
+- ✅ Detecção automática por extensão
+- ✅ Reutilização da lógica de instanciação
+
+#### 🎯 Lições Aprendidas
+
+1. **Regex é Poderoso**: Expressões regulares resolvem problemas complexos de parsing
+2. **Split com Limite**: `split(":", 2)` preserva conteúdo após primeiro delimitador
+3. **Null em JSON**: String "null" é diferente de null Java
+4. **Parsing Manual tem Limites**: Funciona para casos simples, mas bibliotecas são melhores para produção
+5. **Prática Pedagógica**: Entender estrutura interna antes de usar bibliotecas
+
+#### 📊 Comparação CSV vs JSON
+
+| Aspecto | CSV | JSON |
+|---------|-----|------|
+| Legibilidade | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| Compacto | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
+| Estruturado | ⭐⭐ | ⭐⭐⭐⭐⭐ |
+| Aninhamento | ❌ | ✅ |
+| Tipos de dados | Limitado | Completo |
+| Facilidade parsing | Simples | Médio (manual) |
+
+#### ⚠️ Nota Importante
+
+**Este é um parsing TEMPORÁRIO!**
+
+O código atual usa manipulação manual de strings para fins **pedagógicos**. Na próxima aula (Aula 16 - Refatoração), será:
+- ✅ Introduzida biblioteca JSON (Gson, Jackson ou JSON-B)
+- ✅ Refatorado para usar parsing profissional
+- ✅ Comparadas as abordagens: manual vs biblioteca
+
+**Limitações do Parsing Manual:**
+- ❌ JSON aninhado (objetos dentro de objetos)
+- ❌ Arrays complexos
+- ❌ Strings com caracteres especiais
+- ❌ JSON não padronizado
+
+#### 🔗 Conexão com Aulas Anteriores
+
+**Aula 12 (String) + Aula 13 (StringBuilder) + Aula 14 (CSV) = Aula 15 (JSON)!**
+- `replace()` → limpar caracteres estruturais
+- `split()` com regex → dividir campos
+- `split()` com limite → preservar conteúdo
+- `trim()` → limpar espaços
+- `equals()` → comparar com "null"
+- Experiência com CSV facilitou entendimento de JSON
 
 ---
 
@@ -432,6 +528,7 @@ Cardapio cardapio = new Cardapio(nomeArquivo);
 - Conceito de Interfaces
 - Programação para interfaces
 - Contratos e implementações
+- **Refatoração do parsing JSON com biblioteca** ⭐
 
 ---
 
@@ -524,6 +621,36 @@ Cardapio cardapio = new Cardapio("itens-cardapio.csv");
 - ✅ Não precisa recompilar para mudar dados
 - ✅ Escalabilidade ilimitada
 
+### v0.15 - Suporte a JSON (Aula 15)
+
+**Antes:**
+```java
+// Suportava apenas CSV
+if (nomeArquivo.endsWith(".csv")) {
+    // parsing CSV
+} else {
+    System.out.println("Formato inválido");
+}
+```
+
+**Depois:**
+```java
+// Suporta CSV E JSON!
+if (nomeArquivo.endsWith(".csv")) {
+    // parsing CSV
+} else if (nomeArquivo.endsWith(".json")) {
+    // parsing JSON
+} else {
+    System.out.println("Formato inválido");
+}
+```
+
+**Benefícios:**
+- ✅ Flexibilidade de formato de dados
+- ✅ Mesmo código para múltiplos formatos
+- ✅ Detecção automática por extensão
+- ✅ Preparação para uso de bibliotecas (Aula 16)
+
 ---
 
 ## 📊 Métricas do Projeto
@@ -531,12 +658,13 @@ Cardapio cardapio = new Cardapio("itens-cardapio.csv");
 | Métrica | Valor Atual |
 |---------|-------------|
 | Classes criadas | 12+ |
-| Linhas de código | ~600+ (reduzido após Aula 14) |
-| Conceitos de POO aplicados | 9 |
+| Linhas de código | ~650+ |
+| Conceitos de POO aplicados | 10 |
 | Exercícios resolvidos | 6 (aulas 10-13) |
-| Aulas versionadas | 5 de 19 |
-| Aulas concluídas | 14 de 19 |
+| Aulas versionadas | 6 de 19 |
+| Aulas concluídas | 15 de 19 |
 | Arquivos de dados | 2 (CSV e JSON) |
+| Formatos suportados | 2 (CSV e JSON) ⭐ |
 
 ---
 
@@ -549,10 +677,10 @@ Cardapio cardapio = new Cardapio("itens-cardapio.csv");
 
 **Bloco 5 - Arquivos e Dados:**
 - [x] Aula 14 - Praticando com Arquivo CSV ✅
-- [ ] Aula 15 - Praticando com Arquivo JSON
+- [x] Aula 15 - Praticando com Arquivo JSON ✅
 
 **Bloco 6 - Design Avançado:**
-- [ ] Aula 16 - Refatoração e Interfaces
+- [ ] Aula 16 - Refatoração e Interfaces (Incluirá refatoração do JSON com biblioteca!)
 - [ ] Aula 17 - Classes Abstratas e Static
 - [ ] Aula 18 - Object, Classes Wrapper e Javadoc
 - [ ] Aula 19 - JARs e Exceptions (Conclusão do Módulo 1)
@@ -590,6 +718,16 @@ Cardapio cardapio = new Cardapio("itens-cardapio.csv");
 5. **Hard-coding é Limitante**: Fácil no começo, pesadelo depois
 6. **IOException**: Importância do tratamento de exceções em I/O
 
+### Aula 15
+1. **Regex é Poderoso**: Expressões regulares resolvem problemas complexos de parsing
+2. **Split com Limite**: `split(":", 2)` preserva conteúdo após primeiro delimitador
+3. **Null em JSON**: String "null" é diferente de null Java
+4. **Parsing Manual tem Limites**: Funciona para casos simples, mas bibliotecas são melhores
+5. **Prática Pedagógica**: Entender estrutura interna antes de usar bibliotecas
+6. **Multi-Formato**: Um sistema pode suportar múltiplos formatos simultaneamente
+7. **Regex para Delimitadores**: `",\\s*\""` captura vírgulas seguidas de aspas
+8. **Aprendizado Progressivo**: CSV → JSON manual → JSON com biblioteca (próxima aula)
+
 ---
 
 ## 📌 Notas de Desenvolvimento
@@ -606,6 +744,18 @@ Cardapio cardapio = new Cardapio("itens-cardapio.csv");
 - Fácil edição sem recompilar
 - Escalável (qualquer quantidade de itens)
 - Formato simples e legível
+
+**Por que adicionar JSON?**
+- Formato mais expressivo que CSV
+- Suporta estruturas aninhadas (futuro)
+- Padrão da indústria para APIs
+- Preparação para uso de bibliotecas
+
+**Por que parsing manual de JSON?**
+- Objetivo pedagógico: entender estrutura
+- Reforçar manipulação de strings e regex
+- Apreciar valor de bibliotecas depois
+- Praticar lógica de parsing
 
 **Estrutura de pacotes:**
 - `mx.florinda.modelo` - Classes de domínio (entidades do negócio)
@@ -626,4 +776,4 @@ Cardapio cardapio = new Cardapio("itens-cardapio.csv");
 ---
 
 _Documento atualizado em: Fevereiro 2026_
-_Última aula registrada: Aula 14_
+_Última aula registrada: Aula 15_

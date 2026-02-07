@@ -693,19 +693,21 @@ public class FabricaLeitorItensCardapio {
 
 ## 📊 Métricas do Projeto
 
+## 📊 Métricas do Projeto
+
 | Métrica | Valor Atual |
 |---------|-------------|
-| Classes criadas | 16+ |
-| Linhas de código | ~700+ |
+| Classes criadas | 17+ |
+| Linhas de código | ~850+ |
 | Conceitos de POO aplicados | 13 |
-| Exercícios resolvidos | 6 (aulas 10-13) |
+| Exercícios resolvidos | 7 (aulas 10-13 + Aula 16 Ex. 2) |
 | Aulas versionadas | 7 de 19 |
 | Aulas concluídas | 16 de 19 |
-| Arquivos de dados | 2 (CSV e JSON) |
-| Formatos suportados | 2 (CSV e JSON) |
-| Pacotes organizados | 3 (cli, modelo, leitor) ⭐ |
-| Interfaces criadas | 1 (LeitorItensCardapio) ⭐ |
-| Padrões de projeto | 1 (Factory) ⭐ |
+| Arquivos de dados | 3 (CSV, JSON e XML) |
+| Formatos suportados | 3 (CSV, JSON e XML) |
+| Pacotes organizados | 3 (cli, modelo, leitor) |
+| Interfaces criadas | 1 (LeitorItensCardapio) |
+| Padrões de projeto | 1 (Factory) |
 
 ---
 
@@ -782,6 +784,84 @@ public class FabricaLeitorItensCardapio {
 10. **Pequenas refatorações somam**: Extrair classe, interface, método = grande impacto
 11. **Testabilidade vem de design**: Classes coesas e desacopladas são fáceis de testar
 12. **Padrões resolvem problemas comuns**: Factory, Strategy, etc. são ferramentas úteis
+
+---
+
+### Aula 16 - Exercício 2: Suporte a XML
+
+**Data de Implementação:** Fevereiro 2026
+
+#### ✨ Novidades Implementadas
+
+**Classe LeitorItensCardapioXML:**
+- Terceira implementação da interface LeitorItensCardapio
+- Parsing de XML linha a linha sem bibliotecas externas
+- Métodos auxiliares para extração de conteúdo entre tags
+- Controle de estado para acumular dados de cada item
+
+**Atualização da FabricaLeitorItensCardapio:**
+- Adicionada detecção de arquivos .xml
+- Retorna LeitorItensCardapioXML quando apropriado
+- Mantém compatibilidade total com CSV e JSON
+
+**Estrutura do Arquivo XML:**
+- Tag raiz: menu
+- Tags item para cada produto
+- Tags internas: id, nome, descricao, preco, categoria, etc.
+
+#### 💻 Estratégia de Implementação
+
+**1. Contagem de Itens:**
+- Primeiro loop conta quantos tags item existem
+- Cria array com tamanho exato
+
+**2. Controle de Estado:**
+- Variáveis temporárias acumulam dados de cada item
+- Quando encontra item, reseta variáveis
+- Quando encontra /item, cria objeto e adiciona ao array
+
+**3. Extração de Conteúdo:**
+- Método extrairConteudoTag localiza conteúdo entre tags
+- Métodos específicos para cada tipo de dado (Long, String, Double, Boolean, Enum)
+
+#### 🎓 Conceitos Aplicados
+
+**Extensibilidade do Factory Pattern:**
+- ZERO mudanças em: Cardapio, Main, Restaurante, ItemCardapio
+- Apenas ADICIONADO: LeitorItensCardapioXML + uma linha na Factory
+
+**Open/Closed Principle em Ação:**
+- Sistema aberto para extensão (nova classe XML)
+- Sistema fechado para modificação (código existente intacto)
+
+**Polimorfismo via Interface:**
+- Mesmo código funciona para CSV, JSON e agora XML
+- Cliente não precisa saber qual formato está usando
+
+#### 📊 Comparação: XML vs CSV vs JSON
+
+| Aspecto | CSV | JSON | XML |
+|---------|-----|------|-----|
+| Linhas de código | ~70 | ~90 | ~120 |
+| Complexidade | Baixa | Média | Média-Alta |
+| Legibilidade arquivo | Baixa | Alta | Muito Alta |
+| Estrutura | Linear | Aninhada | Hierárquica |
+| Parsing | Split simples | Regex + Split | Tags + Estado |
+
+#### 💡 Lições Aprendidas
+
+1. **Factory Pattern facilita extensão** - Adicionar XML foi trivial
+2. **Interface garante compatibilidade** - Nova implementação funcionou imediatamente
+3. **Parsing manual ensina estrutura** - Entender XML ajuda a usar bibliotecas depois
+4. **Organização em métodos** - Métodos auxiliares evitam repetição
+5. **Arrays são suficientes** - Não precisa de List para estruturas simples
+
+#### 🎯 Exercício Concluído
+
+**Objetivo:** Adicionar suporte a XML sem modificar código existente  
+**Status:** ✅ Completo  
+**Resultado:** Sistema agora suporta 3 formatos de forma transparente  
+**Aprendizado:** Factory Pattern + Interfaces = extensibilidade poderosa
 
 ---
 

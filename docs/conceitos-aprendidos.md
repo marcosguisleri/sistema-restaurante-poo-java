@@ -877,12 +877,44 @@ void main() throws Exception {
 }
 ```
 
+### 💻 Extensão para XML (Exercício 2 - Aula 16)
+
+Adicionar XML foi trivial!
+
+public class LeitorItensCardapioXML implements LeitorItensCardapio {
+@Override
+public ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException {
+// Implementação para XML
+// Parsing linha a linha com controle de estado
+return itens;
+}
+}
+
+Atualização mínima na fábrica:
+
+public class FabricaLeitorItensCardapio {
+public LeitorItensCardapio criaLeitor(String nomeArquivo) {
+if (nomeArquivo.endsWith(".csv")) return new LeitorItensCardapioCSV();
+if (nomeArquivo.endsWith(".json")) return new LeitorItensCardapioJSON();
+if (nomeArquivo.endsWith(".xml")) return new LeitorItensCardapioXML(); // NOVA!
+return null;
+}
+}
+
+ZERO mudanças necessárias em: Cardapio.java, Main.java, Restaurante.java
+
+**Demonstração do Open/Closed Principle:**
+- ✅ Sistema aberto para extensão (adicionamos XML)
+- ✅ Sistema fechado para modificação (código existente intacto)
+- ✅ Adicionar YAML, TOML, etc. seria igualmente fácil
+
 ### ✅ Onde foi usado
-- **Aula 16: `FabricaLeitorItensCardapio`** ⭐
+- **Aula 16: FabricaLeitorItensCardapio**
 - Centraliza lógica de criação de leitores
 - Decide qual leitor instanciar baseado na extensão do arquivo
-- Desacopla `Cardapio` das implementações concretas de leitores
+- Desacopla Cardapio das implementações concretas de leitores
 - Facilita adição de novos formatos de arquivo
+- **Exercício 2: Extensão para XML demonstra extensibilidade**
 
 ---
 

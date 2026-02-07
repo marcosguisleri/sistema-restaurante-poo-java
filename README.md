@@ -65,6 +65,7 @@ sistema-restaurante-poo-java/
 │       │   ├── LeitorItensCardapio.java (interface)
 │       │   ├── LeitorItensCardapioCSV.java
 │       │   └── LeitorItensCardapioJSON.java
+│       │   └── LeitorItensCardapioXML.java
 │       └── modelo/                 # Modelos e entidades do sistema
 │           ├── isento/             # Subpacote para itens isentos
 │           │   └── ItemCardapioIsento.java
@@ -115,6 +116,11 @@ ou
 Digite o nome do arquivo: itens-cardapio.json
 ```
 
+ou
+```
+Digite o nome do arquivo: itens-cardapio.xml
+```
+
 5. Siga as instruções no console para interagir com o sistema
 
 ---
@@ -149,6 +155,24 @@ Ou de um arquivo JSON com objetos estruturados:
     "semGlutem": false
   }
 ]
+```
+
+### Formato CSV (itens-cardapio.csv)
+
+O cardápio pode ser carregado de um arquivo CSV com 9 colunas separadas por ponto-e-vírgula (`;`):
+
+```xml
+    <item>
+    <id>1</id>
+    <nome>Refresco do Chaves</nome>
+    <descricao>Suco de limão que parece de tamarindo e tem gosto de groselha.</descricao>
+    <preco>2.99</preco>
+    <categoria>BEBIDAS</categoria>
+    <emPromocao>false</emPromocao>
+    <precoComDesconto></precoComDesconto>
+    <impostoIsento>false</impostoIsento>
+    <semGlutem>false</semGlutem>
+</item>
 ```
 
 **Vantagens:**
@@ -440,22 +464,6 @@ Main
 - **I/O:** java.nio.file (Path, Files)
 - **Formatos de Dados:** CSV, JSON
 - **Controle de Versão:** Git & GitHub
-
----
-
-## 📊 Estatísticas do Projeto
-
-| Métrica | Valor |
-|---------|-------|
-| Classes Java | 16+ |
-| Interfaces | 1 (LeitorItensCardapio) |
-| Pacotes | 3 (cli, modelo, leitor) |
-| Linhas de código | ~700+ |
-| Conceitos POO | 13 aplicados |
-| Padrões de projeto | 1 (Factory) |
-| Aulas concluídas | 16 de 19 |
-| Formatos suportados | 2 (CSV, JSON) |
-| Redução no construtor | 92% (Aula 16) |
 
 ---
 

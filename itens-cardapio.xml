@@ -1,0 +1,79 @@
+<menu>
+    <item>
+        <id>1</id>
+        <nome>Refresco do Chaves</nome>
+        <descricao>Suco de limão que parece de tamarindo e tem gosto de groselha.</descricao>
+        <preco>2.99</preco>
+        <categoria>BEBIDAS</categoria>
+        <emPromocao>false</emPromocao>
+        <precoComDesconto></precoComDesconto>
+        <impostoIsento>false</impostoIsento>
+        <semGlutem>false</semGlutem>
+    </item>
+    <item>
+        <id>2</id>
+        <nome>Sanduíche de Presunto do Chaves</nome>
+        <descricao>Sanduíche de presunto simples mas feito com muito amor.</descricao>
+        <preco>3.50</preco>
+        <categoria>PRATOS_PRINCIPAIS</categoria>
+        <emPromocao>true</emPromocao>
+        <precoComDesconto>2.99</precoComDesconto>
+        <impostoIsento>false</impostoIsento>
+        <semGlutem>true</semGlutem>
+    </item>
+    <item>
+        <id>3</id>
+        <nome>Torta de Frango da Dona Florinda</nome>
+        <descricao>Torta de frango com recheio cremoso e massa crocante.</descricao>
+        <preco>12.99</preco>
+        <categoria>PRATOS_PRINCIPAIS</categoria>
+        <emPromocao>true</emPromocao>
+        <precoComDesconto>10.99</precoComDesconto>
+        <impostoIsento>false</impostoIsento>
+        <semGlutem>false</semGlutem>
+    </item>
+    <item>
+        <id>4</id>
+        <nome>Pipoca do Quico</nome>
+        <descricao>Balde de pipoca preparado com carinho pelo Quico.</descricao>
+        <preco>4.99</preco>
+        <categoria>PRATOS_PRINCIPAIS</categoria>
+        <emPromocao>true</emPromocao>
+        <precoComDesconto>3.99</precoComDesconto>
+        <impostoIsento>true</impostoIsento>
+        <semGlutem>true</semGlutem>
+    </item>
+    <item>
+        <id>5</id>
+        <nome>Água de Jamaica</nome>
+        <descricao>Água aromatizada com hibisco e toque de açúcar.</descricao>
+        <preco>2.5</preco>
+        <categoria>BEBIDAS</categoria>
+        <emPromocao>true</emPromocao>
+        <precoComDesconto>2.0</precoComDesconto>
+        <impostoIsento>false</impostoIsento>
+        <semGlutem>false</semGlutem>
+    </item>
+    <item>
+        <id>6</id>
+        <nome>Churros do Chaves</nome>
+        <descricao>Churros recheados com doce de leite clássicos e irresistíveis.</descricao>
+        <preco>4.99</preco>
+        <categoria>SOBREMESAS</categoria>
+        <emPromocao>true</emPromocao>
+        <precoComDesconto>3.99</precoComDesconto>
+        <impostoIsento>true</impostoIsento>
+        <semGlutem>false</semGlutem>
+    </item>
+    <item>
+        <id>7</id>
+        <nome>Tacos de Carnitas</nome>
+        <descricao>Tacos recheados com carne tenra</descricao>
+        <preco>25.9</preco>
+        <categoria>PRATOS_PRINCIPAIS</categoria>
+        <emPromocao>false</emPromocao>
+        <precoComDesconto></precoComDesconto>
+        <impostoIsento>true</impostoIsento>
+        <semGlutem>false</semGlutem>
+    </item>
+</menu>

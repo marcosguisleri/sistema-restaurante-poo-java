@@ -10,6 +10,8 @@ public class FabricaLeitorItensCardapio {
             leitor = new LeitorItensCardapioCSV();
         } else if (nomeArquivo.endsWith(".json")) {
             leitor = new LeitorItensCardapioJSON();
+        } else if (nomeArquivo.endsWith(".xml")) {
+            leitor = new LeitorItensCardapioXML();
         }
         return leitor;
     }

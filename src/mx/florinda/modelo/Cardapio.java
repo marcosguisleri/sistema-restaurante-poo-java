@@ -1,6 +1,5 @@
 package mx.florinda.modelo;
 
-import mx.florinda.leitor.FabricaLeitorItensCardapio;
 import mx.florinda.leitor.LeitorItensCardapio;
 
 public class Cardapio {
@@ -9,8 +8,7 @@ public class Cardapio {
 
     public Cardapio(String nomeArquivo) throws Exception {
 
-        FabricaLeitorItensCardapio fabricaLeitor = new FabricaLeitorItensCardapio();
-        LeitorItensCardapio leitor = fabricaLeitor.criaLeitor(nomeArquivo);
+        LeitorItensCardapio leitor = LeitorItensCardapio.criaLeitor(nomeArquivo);
 
         if (leitor != null) {
             itens = leitor.processaArquivo(nomeArquivo);

@@ -9,8 +9,7 @@ public class ItemCardapioIsento extends ItemCardapio {
         super(id, nome, descricao, preco, categoria);
     }
 
-    // reescrita de metodo (override)
-    @Override // anotacao opcional
+    @Override
     public double getImposto() {
         return 0.0;
     }

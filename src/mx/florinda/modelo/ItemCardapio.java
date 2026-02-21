@@ -2,7 +2,6 @@ package mx.florinda.modelo;
 
 public class ItemCardapio {
 
-    // atributos
     private long id;
     private String nome;
     private String descricao;
@@ -11,7 +10,6 @@ public class ItemCardapio {
     private double precoComDesconto;
     private CategoriaCardapio categoria;
 
-    //construtor
     public ItemCardapio(long id, String nome, String descricao, double preco, CategoriaCardapio categoria) throws FlorindaException {
         this.id = id;
         this.nome = nome;
@@ -22,6 +20,11 @@ public class ItemCardapio {
         if (preco < 0) {
             throw new FlorindaException("Preço não pode ser negativo: " + preco);
         }
+
+        if(descricao == null || descricao.isBlank()) {
+            throw new FlorindaException("Descrição não pode ser nula ou vazia: " + descricao);
+        }
+
     }
 
     public double getPorcentagemDesconto() {

@@ -2,7 +2,7 @@ import mx.florinda.modelo.Cardapio;
 import mx.florinda.modelo.ItemCardapio;
 import mx.florinda.modelo.Restaurante;
 
-void main() throws Exception {
+void main() {
 
     Restaurante restaurante = new Restaurante("Florinda", "Av. 123 - Araras/SP");
 

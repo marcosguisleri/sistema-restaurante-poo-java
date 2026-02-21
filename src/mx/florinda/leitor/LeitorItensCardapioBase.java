@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public abstract class LeitorItensCardapioBase implements  LeitorItensCardapio {
+public abstract class LeitorItensCardapioBase implements LeitorItensCardapio {
 
     private final String nomeArquivo;
 
@@ -15,29 +15,32 @@ public abstract class LeitorItensCardapioBase implements  LeitorItensCardapio {
     }
 
     @Override
-    public ItemCardapio[] processaArquivo(String nomeArquivo) throws IOException {
+    public ItemCardapio[] processaArquivo(String nomeArquivo) {
 
-        Path arquivo = Path.of(nomeArquivo);
-        String conteudoArquivo = Files.readString(arquivo);
+        try {
+            Path arquivo = Path.of(nomeArquivo);
+            String conteudoArquivo = Files.readString(arquivo);
+            String[] linhasArquivo = conteudoArquivo.split("\n");
+            ItemCardapio[] itens = new ItemCardapio[linhasArquivo.length - 1];
 
-        String[] linhasArquivo = conteudoArquivo.split("\n");
-        ItemCardapio[] itens = new ItemCardapio[linhasArquivo.length];
+            for (int i = 1; i < linhasArquivo.length; i++) {
 
-        for (int i = 0; i < linhasArquivo.length; i++) {
+                String linha = linhasArquivo[i].strip();
 
-            String linha = linhasArquivo[i].strip();
+                if (linha.isEmpty()) {
+                    continue;
+                }
 
-            if (linha.isEmpty()) {
-                continue;
+                ItemCardapio item = processaLinha(linha);
+
+                itens[i - 1] = item;
+
             }
 
-            ItemCardapio item = processaLinha(linha);
-
-            itens[i] = item;
-
+            return itens;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        return itens;
 
     }
 

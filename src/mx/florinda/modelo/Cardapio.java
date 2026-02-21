@@ -2,21 +2,15 @@ package mx.florinda.modelo;
 
 import mx.florinda.leitor.LeitorItensCardapio;
 
+import java.io.IOException;
+
 public class Cardapio {
 
     private final ItemCardapio[] itens;
 
-    public Cardapio(String nomeArquivo) throws Exception {
-
+    public Cardapio(String nomeArquivo) {
         LeitorItensCardapio leitor = LeitorItensCardapio.criaLeitor(nomeArquivo);
-
-        if (leitor != null) {
-            itens = leitor.processaArquivo(nomeArquivo);
-        } else {
-            IO.println("O nome/extensão do arquivo é inválido(a) - " + nomeArquivo);
-            itens = new ItemCardapio[0];
-        }
-
+        itens = leitor.processaArquivo(nomeArquivo);
     }
 
     public double getSomaDosPrecos() {

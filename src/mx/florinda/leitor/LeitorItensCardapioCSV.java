@@ -15,12 +15,12 @@ public class LeitorItensCardapioCSV extends LeitorItensCardapioBase {
     }
 
     @Override
-    protected ItemCardapio processaLinha(String linha) throws IOException {
+    protected ItemCardapio processaLinha(String linha) {
 
         String[] partes = linha.split(";", -1);
 
         if (partes.length < 9) {
-            throw new IOException("Linha CSV inválida (esperado 9 colunas, veio " + partes.length + "): " + linha);
+            throw new RuntimeException("Linha CSV inválida (esperado 9 colunas, veio " + partes.length + "): " + linha);
         }
 
         long id = Long.parseLong(partes[0]);
@@ -48,7 +48,7 @@ public class LeitorItensCardapioCSV extends LeitorItensCardapioBase {
         if (emPromocao) {
             String descontoStr = partes[6];
             if (descontoStr == null || descontoStr.isBlank()) {
-                throw new IOException("Item marcado em promoção, mas sem preço com desconto (coluna 6): " + linha);
+                throw new RuntimeException("Item marcado em promoção, mas sem preço com desconto (coluna 6): " + linha);
             }
             double precoComDesconto = Double.parseDouble(descontoStr);
             item.setPromocao(precoComDesconto);

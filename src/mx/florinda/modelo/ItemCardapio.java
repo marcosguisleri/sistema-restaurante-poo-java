@@ -12,15 +12,18 @@ public class ItemCardapio {
     private CategoriaCardapio categoria;
 
     //construtor
-    public ItemCardapio(long id, String nome, String descricao, double preco, CategoriaCardapio categoria) {
+    public ItemCardapio(long id, String nome, String descricao, double preco, CategoriaCardapio categoria) throws FlorindaException {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;
         this.categoria = categoria;
+
+        if (preco < 0) {
+            throw new FlorindaException("Preço não pode ser negativo: " + preco);
+        }
     }
 
-    //metodos
     public double getPorcentagemDesconto() {
         return (preco - precoComDesconto) / preco * 100;
     }
